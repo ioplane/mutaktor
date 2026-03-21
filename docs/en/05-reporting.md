@@ -164,7 +164,7 @@ Upload the SARIF file to GitHub's Code Scanning API to surface survived mutation
       "driver": {
         "name": "Mutaktor (PIT)",
         "version": "1.23.0",
-        "informationUri": "https://github.com/dantte-lp/mutaktor"
+        "informationUri": "https://github.com/ioplane/mutaktor"
       }
     },
     "results": [
@@ -349,7 +349,7 @@ This reporter activates automatically when all three environment variables are p
 | Variable | Source | Description |
 |----------|--------|-------------|
 | `GITHUB_TOKEN` | `${{ secrets.GITHUB_TOKEN }}` | Personal access token or workflow token with `checks: write` permission |
-| `GITHUB_REPOSITORY` | GitHub Actions built-in | `owner/repo` format, e.g. `dantte-lp/mutaktor` |
+| `GITHUB_REPOSITORY` | GitHub Actions built-in | `owner/repo` format, e.g. `ioplane/mutaktor` |
 | `GITHUB_SHA` | GitHub Actions built-in | The commit SHA that triggered the workflow |
 
 ### Annotation Batching

@@ -4,8 +4,8 @@
 
 **Goal:** Build a Kotlin-first Gradle plugin for PIT mutation testing with git-aware analysis, Kotlin junk filtering, standardized reporting, and CI/CD integration.
 
-**Plugin ID:** `io.github.dantte-lp.mutaktor`
-**Group:** `io.github.dantte-lp.mutaktor`
+**Plugin ID:** `io.github.ioplane.mutaktor`
+**Group:** `io.github.ioplane.mutaktor`
 **License:** Apache 2.0
 **Tech Stack:** Kotlin 2.3, Gradle 9.4.1, JDK 25, PIT 1.23.0, JUnit 5 + Kotest
 
@@ -52,7 +52,7 @@ graph TD
 mutaktor/
 ├── mutaktor-gradle-plugin/           # Gradle plugin module
 │   └── src/main/kotlin/
-│       └── io/github/dantte_lp/mutaktor/
+│       └── io/github/ioplane/mutaktor/
 │           ├── MutaktorPlugin.kt             # Plugin entry point
 │           ├── MutaktorExtension.kt          # Type-safe DSL extension
 │           ├── MutaktorTask.kt               # Main task (abstract, JavaExec)
@@ -67,7 +67,7 @@ mutaktor/
 │               └── KotlinJunkFilterConfig.kt     # Configure Kotlin-specific PIT filters
 ├── mutaktor-pitest-filter/           # PIT plugin JAR (loaded by PIT runtime)
 │   └── src/main/kotlin/
-│       └── io/github/dantte_lp/mutaktor/pitest/
+│       └── io/github/ioplane/mutaktor/pitest/
 │           ├── KotlinCoroutineFilter.kt      # Filter coroutine state machine junk
 │           ├── KotlinSealedWhenFilter.kt     # Filter sealed/when hashcode junk
 │           ├── KotlinInlineFunctionFilter.kt # Filter inlined function duplicates

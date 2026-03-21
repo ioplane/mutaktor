@@ -15,7 +15,7 @@ Once 1.0.0 is released, the two most recent minor versions will receive security
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Report vulnerabilities through [GitHub Security Advisories](https://github.com/dantte-lp/mutaktor/security/advisories/new). This creates a private disclosure thread visible only to maintainers.
+Report vulnerabilities through [GitHub Security Advisories](https://github.com/ioplane/mutaktor/security/advisories/new). This creates a private disclosure thread visible only to maintainers.
 
 Include in your report:
 

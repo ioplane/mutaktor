@@ -1,7 +1,7 @@
 # Final PM & QA Assessment — Mutaktor v0.1.0
 
 **Date:** 2026-03-21
-**Project:** mutaktor — https://github.com/dantte-lp/mutaktor
+**Project:** mutaktor — https://github.com/ioplane/mutaktor
 
 ---
 

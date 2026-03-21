@@ -126,7 +126,7 @@ graph TD
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "0.2.0"
+    id("io.github.ioplane.mutaktor") version "0.2.0"
 }
 
 mutaktor {
@@ -149,7 +149,7 @@ mutaktor {
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
+    id 'io.github.ioplane.mutaktor' version '0.2.0'
 }
 
 mutaktor {
@@ -241,8 +241,8 @@ graph TB
 
 | Модуль | Plugin ID / Артефакт | Назначение |
 |--------|----------------------|------------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Применяется в проектах-потребителях; регистрирует задачу `mutate` |
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor.aggregate` | Применяется к корневому проекту; регистрирует задачу `mutateAggregate` |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor` | Применяется в проектах-потребителях; регистрирует задачу `mutate` |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor.aggregate` | Применяется к корневому проекту; регистрирует задачу `mutateAggregate` |
 | `mutaktor-pitest-filter` | PIT SPI JAR | Загружается PIT во время выполнения; фильтрует мутации, генерируемые компилятором Kotlin |
 | `mutaktor-annotations` | `mutaktor-annotations.jar` | Аннотации `@MutationCritical` и `@SuppressMutations` |
 | `build-logic` | внутренний | Общий конвенционный плагин для toolchain Kotlin + JVM |

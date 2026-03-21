@@ -51,7 +51,7 @@
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "0.1.0"
+    id("io.github.ioplane.mutaktor") version "0.1.0"
 }
 
 mutaktor {
@@ -65,7 +65,7 @@ mutaktor {
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version '0.1.0'
+    id 'io.github.ioplane.mutaktor' version '0.1.0'
 }
 
 mutaktor {
@@ -246,13 +246,13 @@ Add the `mutaktor-annotations` dependency (zero transitive dependencies) to cont
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("io.github.dantte-lp.mutaktor:mutaktor-annotations:0.1.0")
+    implementation("io.github.ioplane.mutaktor:mutaktor-annotations:0.1.0")
 }
 ```
 
 ```kotlin
-import io.github.dantte_lp.mutaktor.annotations.MutationCritical
-import io.github.dantte_lp.mutaktor.annotations.SuppressMutations
+import io.github.ioplane.mutaktor.annotations.MutationCritical
+import io.github.ioplane.mutaktor.annotations.SuppressMutations
 
 // Require 100% mutation score — build fails if any mutant survives
 @MutationCritical(reason = "Core payment validation logic")
@@ -289,13 +289,13 @@ include("core", "api", "service")
 
 // build.gradle.kts (root)
 plugins {
-    id("io.github.dantte-lp.mutaktor.aggregate") version "0.1.0"
+    id("io.github.ioplane.mutaktor.aggregate") version "0.1.0"
 }
 
 // core/build.gradle.kts, api/build.gradle.kts, service/build.gradle.kts
 plugins {
     kotlin("jvm")
-    id("io.github.dantte-lp.mutaktor") version "0.1.0"
+    id("io.github.ioplane.mutaktor") version "0.1.0"
 }
 
 mutaktor {

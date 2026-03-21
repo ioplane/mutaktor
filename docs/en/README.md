@@ -125,7 +125,7 @@ graph TD
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "0.2.0"
+    id("io.github.ioplane.mutaktor") version "0.2.0"
 }
 
 mutaktor {
@@ -148,7 +148,7 @@ mutaktor {
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
+    id 'io.github.ioplane.mutaktor' version '0.2.0'
 }
 
 mutaktor {
@@ -240,8 +240,8 @@ graph TB
 
 | Module | Plugin ID / Artifact | Purpose |
 |--------|----------------------|---------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Applied to consumer projects; registers `mutate` task |
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor.aggregate` | Applied to root project; registers `mutateAggregate` task |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor` | Applied to consumer projects; registers `mutate` task |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor.aggregate` | Applied to root project; registers `mutateAggregate` task |
 | `mutaktor-pitest-filter` | PIT SPI JAR | Loaded by PIT at runtime; filters Kotlin compiler-generated mutations |
 | `mutaktor-annotations` | `mutaktor-annotations.jar` | `@MutationCritical` and `@SuppressMutations` annotations |
 | `build-logic` | internal | Shared Kotlin + JVM toolchain convention plugin |

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-03-22
+## [0.1.0] - 2026-03-22
+
+First public release under `io.github.ioplane.mutaktor`.
 
 CE feature-complete release. 135 tests, 4 modules, zero external dependencies.
 
@@ -43,5 +45,5 @@ CE feature-complete release. 135 tests, 4 modules, zero external dependencies.
 - All GitHub Actions pinned to full commit SHAs
 - All workflow permissions at job level (least privilege)
 
-[Unreleased]: https://github.com/ioplane/mutaktor/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/ioplane/mutaktor/releases/tag/v0.2.0
+[Unreleased]: https://github.com/ioplane/mutaktor/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ioplane/mutaktor/releases/tag/v0.1.0

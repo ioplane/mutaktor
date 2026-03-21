@@ -32,7 +32,7 @@ sidebar_label: Разработка
 ## Начало работы
 
 ```bash
-git clone https://github.com/dantte-lp/mutaktor.git
+git clone https://github.com/ioplane/mutaktor.git
 cd mutaktor
 ./gradlew check
 ```
@@ -48,7 +48,7 @@ mutaktor/
 ├── mutaktor-gradle-plugin/            # Основной модуль плагина Gradle
 │   ├── build.gradle.kts
 │   └── src/
-│       ├── main/kotlin/io/github/dantte_lp/mutaktor/
+│       ├── main/kotlin/io/github/ioplane/mutaktor/
 │       │   ├── MutaktorPlugin.kt              # Точка входа плагина
 │       │   ├── MutaktorExtension.kt           # Типобезопасный DSL (32 свойства)
 │       │   ├── MutaktorTask.kt                # Основная задача: JavaExec + постобработка
@@ -75,11 +75,11 @@ mutaktor/
 │       └── functionalTest/                    # Интеграционные тесты Gradle TestKit
 │
 ├── mutaktor-pitest-filter/            # JAR плагина PIT
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/pitest/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/pitest/
 │       └── KotlinJunkFilter.kt               # MutationInterceptor SPI (5 шаблонов)
 │
 ├── mutaktor-annotations/              # Модуль аннотаций уровня исходного кода
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/annotations/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/annotations/
 │       ├── MutationCritical.kt
 │       └── SuppressMutations.kt
 │
@@ -101,7 +101,7 @@ mutaktor/
 
 | Модуль | Артефакт | Назначение |
 |--------|----------|------------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Плагин Gradle, применяемый в потребительских сборках |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor` | Плагин Gradle, применяемый в потребительских сборках |
 | `mutaktor-pitest-filter` | `mutaktor-pitest-filter.jar` | JAR плагина PIT, загружаемый во время выполнения мутационного тестирования |
 | `mutaktor-annotations` | `mutaktor-annotations.jar` | Аннотации `@MutationCritical` и `@SuppressMutations` |
 | `build-logic` | (внутренний) | Общие соглашения Kotlin + JVM toolchain |
@@ -177,7 +177,7 @@ kotest-assertions     = { module = "io.kotest:kotest-assertions-core", version.r
 ### Язык
 
 - **Только Kotlin.** Никакого Groovy, никакой Java в production-коде.
-- Имена пакетов используют подчёркивания из-за имени пользователя GitHub: `io.github.dantte_lp.mutaktor`.
+- Имена пакетов используют подчёркивания из-за имени пользователя GitHub: `io.github.ioplane.mutaktor`.
 
 ### Provider API Gradle
 
@@ -305,7 +305,7 @@ class MutaktorPluginFunctionalTest {
         projectDir.resolve("build.gradle.kts").writeText("""
             plugins {
                 java
-                id("io.github.dantte-lp.mutaktor")
+                id("io.github.ioplane.mutaktor")
             }
             mutaktor {
                 targetClasses.set(setOf("com.example.*"))
@@ -388,12 +388,12 @@ fun `regular class with WhenMappings substring in package is not filtered`() {
 
 ## Добавление новых форматов отчётов
 
-Конвертеры отчётов находятся в `mutaktor-gradle-plugin/src/main/kotlin/io/github/dantte_lp/mutaktor/report/`.
+Конвертеры отчётов находятся в `mutaktor-gradle-plugin/src/main/kotlin/io/github/ioplane/mutaktor/report/`.
 
 ### Шаг 1 — Создать объект-конвертер
 
 ```kotlin
-package io.github.dantte_lp.mutaktor.report
+package io.github.ioplane.mutaktor.report
 
 import java.io.File
 

@@ -46,7 +46,7 @@ Grace period: 30 days past expiry → degrades to Community.
 2. Add to ~/.gradle/gradle.properties:
      mutaktorProToken=mkt_abc123...
 3. Add to build.gradle.kts:
-     dependencies { mutaktorPro("io.github.dantte-lp:mutaktor-pro:1.0") }
+     dependencies { mutaktorPro("io.github.ioplane:mutaktor-pro:1.0") }
 4. Place license file:
      ~/.mutaktor/license.key
 5. Pro features enabled automatically via ServiceLoader
@@ -68,8 +68,8 @@ class MutaktorProFeaturesImpl : MutaktorProFeatures {
     override fun reportToGitlab(...) = ...
 }
 
-// META-INF/services/io.github.dantte_lp.mutaktor.MutaktorProFeatures
-// io.github.dantte_lp.mutaktor.pro.MutaktorProFeaturesImpl
+// META-INF/services/io.github.ioplane.mutaktor.MutaktorProFeatures
+// io.github.ioplane.mutaktor.pro.MutaktorProFeaturesImpl
 ```
 
 ### What NOT to Do

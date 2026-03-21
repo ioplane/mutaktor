@@ -4,9 +4,9 @@
 
 Kotlin-first Gradle plugin for PIT mutation testing with git-aware analysis, Kotlin junk filtering, and CI/CD integration.
 
-**Plugin ID:** `io.github.dantte-lp.mutaktor`
-**Aggregate Plugin ID:** `io.github.dantte-lp.mutaktor.aggregate`
-**Group:** `io.github.dantte-lp.mutaktor`
+**Plugin ID:** `io.github.ioplane.mutaktor`
+**Aggregate Plugin ID:** `io.github.ioplane.mutaktor.aggregate`
+**Group:** `io.github.ioplane.mutaktor`
 **Language:** Kotlin 2.3 | **Build:** Gradle 9.4.1 (Kotlin DSL)
 **Test:** JUnit 5 + Kotest assertions + Gradle TestKit
 **Min JDK:** 17 | **Target JDK:** 25 | **PIT:** 1.23.0

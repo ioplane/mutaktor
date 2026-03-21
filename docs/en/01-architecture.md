@@ -24,7 +24,7 @@ The plugin is composed of four published or companion modules plus a shared buil
 
 | Module | Artifact | Purpose |
 |--------|----------|---------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Gradle plugin, DSL extension, `mutate` task, report converters, ratchet, toolchain detection |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor` | Gradle plugin, DSL extension, `mutate` task, report converters, ratchet, toolchain detection |
 | `mutaktor-pitest-filter` | companion JAR on PIT classpath | PIT `MutationInterceptor` SPI that filters Kotlin compiler-generated junk |
 | `mutaktor-annotations` | `mutaktor-annotations.jar` | `@MutationCritical` and `@SuppressMutations` source-level annotations |
 | `build-logic` | internal only | Convention plugins for shared Kotlin/publishing config |
@@ -34,7 +34,7 @@ The plugin is composed of four published or companion modules plus a shared buil
 ```
 mutaktor/
 ├── mutaktor-gradle-plugin/
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/
 │       ├── MutaktorPlugin.kt              # Plugin entry point
 │       ├── MutaktorExtension.kt           # DSL extension (32 properties)
 │       ├── MutaktorTask.kt                # JavaExec task + post-processing pipeline
@@ -59,11 +59,11 @@ mutaktor/
 │           └── SourcePathResolver.kt      # File path → FQN conversion
 │
 ├── mutaktor-pitest-filter/
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/pitest/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/pitest/
 │       └── KotlinJunkFilter.kt            # MutationInterceptorFactory + 5 filters
 │
 ├── mutaktor-annotations/
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/annotations/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/annotations/
 │       ├── MutationCritical.kt            # Enforces 100% mutation score
 │       └── SuppressMutations.kt           # Excludes code from analysis
 │
@@ -182,21 +182,21 @@ flowchart TD
 
 | Class | Package | Role |
 |-------|---------|------|
-| `MutaktorPlugin` | `io.github.dantte_lp.mutaktor` | `Plugin<Project>` entry point; creates the `mutaktor` configuration and registers the `mutate` task with lazy wiring |
-| `MutaktorExtension` | `io.github.dantte_lp.mutaktor` | Type-safe DSL; all 32 properties use the Gradle Provider API for lazy evaluation and configuration-cache compatibility |
-| `MutaktorTask` | `io.github.dantte_lp.mutaktor` | `@CacheableTask` extending `JavaExec`; assembles the PIT CLI argument list from Provider values, delegates to `super.exec()`, then runs the post-processing pipeline |
-| `MutaktorAggregatePlugin` | `io.github.dantte_lp.mutaktor` | Optional root-project plugin; registers `mutateAggregate` (`Copy` task) that collects subproject reports |
-| `GitDiffAnalyzer` | `io.github.dantte_lp.mutaktor.git` | Runs `git diff --name-only --diff-filter=ACMR sinceRef..HEAD` and converts file paths to FQN glob patterns |
-| `GraalVmDetector` | `io.github.dantte_lp.mutaktor.toolchain` | Detects GraalVM + Quarkus combination; auto-resolves a standard JDK via `JavaToolchainService` for PIT child process |
-| `ExtremeMutationConfig` | `io.github.dantte_lp.mutaktor.extreme` | Holds the 6 method-body removal mutators used in extreme mode |
-| `KotlinJunkFilter` | `io.github.dantte_lp.mutaktor.pitest` | PIT `MutationInterceptor` with 5 predicates that discard compiler-generated noise mutations |
-| `KotlinJunkFilterFactory` | `io.github.dantte_lp.mutaktor.pitest` | `MutationInterceptorFactory` discovered via `META-INF/services`; registers the `KOTLIN_JUNK` feature flag |
-| `MutationElementsConverter` | `io.github.dantte_lp.mutaktor.report` | Parses `mutations.xml` and emits mutation-testing-elements JSON (Stryker Dashboard schema v2) |
-| `SarifConverter` | `io.github.dantte_lp.mutaktor.report` | Parses `mutations.xml` and emits SARIF 2.1.0; only survived mutations are included as results |
-| `QualityGate` | `io.github.dantte_lp.mutaktor.report` | Computes kill ratio and compares against a threshold; returns a typed `Result` |
-| `MutationRatchet` | `io.github.dantte_lp.mutaktor.ratchet` | Computes per-package scores from `mutations.xml`; fails if any package drops below its baseline |
-| `RatchetBaseline` | `io.github.dantte_lp.mutaktor.ratchet` | Reads and writes the JSON baseline file (`.mutaktor-baseline.json`) |
-| `GithubChecksReporter` | `io.github.dantte_lp.mutaktor.report` | Posts a GitHub Check Run with warning annotations for each survived mutant via the GitHub Checks API |
+| `MutaktorPlugin` | `io.github.ioplane.mutaktor` | `Plugin<Project>` entry point; creates the `mutaktor` configuration and registers the `mutate` task with lazy wiring |
+| `MutaktorExtension` | `io.github.ioplane.mutaktor` | Type-safe DSL; all 32 properties use the Gradle Provider API for lazy evaluation and configuration-cache compatibility |
+| `MutaktorTask` | `io.github.ioplane.mutaktor` | `@CacheableTask` extending `JavaExec`; assembles the PIT CLI argument list from Provider values, delegates to `super.exec()`, then runs the post-processing pipeline |
+| `MutaktorAggregatePlugin` | `io.github.ioplane.mutaktor` | Optional root-project plugin; registers `mutateAggregate` (`Copy` task) that collects subproject reports |
+| `GitDiffAnalyzer` | `io.github.ioplane.mutaktor.git` | Runs `git diff --name-only --diff-filter=ACMR sinceRef..HEAD` and converts file paths to FQN glob patterns |
+| `GraalVmDetector` | `io.github.ioplane.mutaktor.toolchain` | Detects GraalVM + Quarkus combination; auto-resolves a standard JDK via `JavaToolchainService` for PIT child process |
+| `ExtremeMutationConfig` | `io.github.ioplane.mutaktor.extreme` | Holds the 6 method-body removal mutators used in extreme mode |
+| `KotlinJunkFilter` | `io.github.ioplane.mutaktor.pitest` | PIT `MutationInterceptor` with 5 predicates that discard compiler-generated noise mutations |
+| `KotlinJunkFilterFactory` | `io.github.ioplane.mutaktor.pitest` | `MutationInterceptorFactory` discovered via `META-INF/services`; registers the `KOTLIN_JUNK` feature flag |
+| `MutationElementsConverter` | `io.github.ioplane.mutaktor.report` | Parses `mutations.xml` and emits mutation-testing-elements JSON (Stryker Dashboard schema v2) |
+| `SarifConverter` | `io.github.ioplane.mutaktor.report` | Parses `mutations.xml` and emits SARIF 2.1.0; only survived mutations are included as results |
+| `QualityGate` | `io.github.ioplane.mutaktor.report` | Computes kill ratio and compares against a threshold; returns a typed `Result` |
+| `MutationRatchet` | `io.github.ioplane.mutaktor.ratchet` | Computes per-package scores from `mutations.xml`; fails if any package drops below its baseline |
+| `RatchetBaseline` | `io.github.ioplane.mutaktor.ratchet` | Reads and writes the JSON baseline file (`.mutaktor-baseline.json`) |
+| `GithubChecksReporter` | `io.github.ioplane.mutaktor.report` | Posts a GitHub Check Run with warning annotations for each survived mutant via the GitHub Checks API |
 
 ---
 
@@ -285,7 +285,7 @@ For multi-module builds, apply the aggregate plugin to the root project:
 ```kotlin
 // root build.gradle.kts
 plugins {
-    id("io.github.dantte-lp.mutaktor.aggregate")
+    id("io.github.ioplane.mutaktor.aggregate")
 }
 ```
 

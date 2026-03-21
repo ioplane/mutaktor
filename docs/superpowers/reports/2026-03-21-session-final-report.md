@@ -11,8 +11,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Repo | https://github.com/dantte-lp/gradle-pitest-plugin |
-| Release | [v2.0.0](https://github.com/dantte-lp/gradle-pitest-plugin/releases/tag/v2.0.0) |
+| Repo | https://github.com/ioplane/gradle-pitest-plugin |
+| Release | [v2.0.0](https://github.com/ioplane/gradle-pitest-plugin/releases/tag/v2.0.0) |
 | Tests | 142 unit + 22 funcTest = **164 pass** |
 | Upstream PR | [#397](https://github.com/szpak/gradle-pitest-plugin/pull/397) |
 | Changes | 19 files, +345/-79 lines |
@@ -30,7 +30,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Repo | https://github.com/dantte-lp/mutaktor |
+| Repo | https://github.com/ioplane/mutaktor |
 | Tests | **57 pass, 0 fail, 1 skip** |
 | Kotlin LOC | ~3,000 (production + tests) |
 | Docs LOC | ~6,200 (EN + RU) |
@@ -52,13 +52,13 @@
 
 **Tested on real projects:**
 - best-wms (Spring Boot 4.0) — 83 mutations, BUILD SUCCESSFUL
-- qjapi-psql (Quarkus 3.32) — confirmed GraalVM jrt:// issue → [#1](https://github.com/dantte-lp/mutaktor/issues/1)
+- qjapi-psql (Quarkus 3.32) — confirmed GraalVM jrt:// issue → [#1](https://github.com/ioplane/mutaktor/issues/1)
 
 ### 3. qjapi-psql — v0.1.0-SNAPSHOT
 
 | Metric | Value |
 |--------|-------|
-| Repo | https://github.com/dantte-lp/qjapi-psql |
+| Repo | https://github.com/ioplane/qjapi-psql |
 | Stack | Quarkus 3.32.4 + Java 25 + PostgreSQL 18 + Gradle 9.4.1 |
 | Files | 14 Java sources + 3 test files |
 | Endpoints | 9 HTTP methods (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT) |

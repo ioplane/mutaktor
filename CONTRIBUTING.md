@@ -25,7 +25,7 @@ By participating in this project you agree to abide by the [Code of Conduct](COD
 ## Quick Start
 
 ```bash
-git clone https://github.com/dantte-lp/mutaktor.git
+git clone https://github.com/ioplane/mutaktor.git
 cd mutaktor
 ./gradlew check    # build + unit tests + functional tests
 ```
@@ -148,7 +148,7 @@ The plugin has zero external runtime dependencies beyond the Gradle API and PIT 
 
 ### Kotlin conventions
 
-- Packages use underscores: `io.github.dantte_lp.mutaktor`
+- Packages use underscores: `io.github.ioplane.mutaktor`
 - Public API members must have explicit visibility modifiers (`public`, `internal`, `private`)
 - Prefer `abstract` properties on `@CacheableTask` classes and extension objects (Gradle managed properties)
 - Use `layout.buildDirectory` — never `project.buildDir` (removed in Gradle 9)

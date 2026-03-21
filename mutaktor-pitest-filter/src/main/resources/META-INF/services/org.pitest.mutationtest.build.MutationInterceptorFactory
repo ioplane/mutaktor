@@ -1,2 +1,2 @@
-io.github.dantte_lp.mutaktor.pitest.KotlinJunkFilterFactory
-io.github.dantte_lp.mutaktor.pitest.AnnotationInterceptorFactory
+io.github.ioplane.mutaktor.pitest.KotlinJunkFilterFactory
+io.github.ioplane.mutaktor.pitest.AnnotationInterceptorFactory

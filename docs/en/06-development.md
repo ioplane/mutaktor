@@ -31,7 +31,7 @@ No other tools are required. Gradle and Kotlin are managed by the Gradle wrapper
 ## Getting Started
 
 ```bash
-git clone https://github.com/dantte-lp/mutaktor.git
+git clone https://github.com/ioplane/mutaktor.git
 cd mutaktor
 ./gradlew check
 ```
@@ -47,7 +47,7 @@ mutaktor/
 ├── mutaktor-gradle-plugin/            # Main Gradle plugin module
 │   ├── build.gradle.kts
 │   └── src/
-│       ├── main/kotlin/io/github/dantte_lp/mutaktor/
+│       ├── main/kotlin/io/github/ioplane/mutaktor/
 │       │   ├── MutaktorPlugin.kt              # Plugin entry point
 │       │   ├── MutaktorExtension.kt           # Type-safe DSL (32 properties)
 │       │   ├── MutaktorTask.kt                # Main task: JavaExec + post-processing
@@ -74,11 +74,11 @@ mutaktor/
 │       └── functionalTest/                    # Gradle TestKit integration tests
 │
 ├── mutaktor-pitest-filter/            # PIT plugin JAR
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/pitest/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/pitest/
 │       └── KotlinJunkFilter.kt               # MutationInterceptor SPI (5 patterns)
 │
 ├── mutaktor-annotations/              # Source-level annotation module
-│   └── src/main/kotlin/io/github/dantte_lp/mutaktor/annotations/
+│   └── src/main/kotlin/io/github/ioplane/mutaktor/annotations/
 │       ├── MutationCritical.kt
 │       └── SuppressMutations.kt
 │
@@ -100,7 +100,7 @@ mutaktor/
 
 | Module | Artifact | Purpose |
 |--------|----------|---------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Gradle plugin applied in consumer builds |
+| `mutaktor-gradle-plugin` | `io.github.ioplane.mutaktor` | Gradle plugin applied in consumer builds |
 | `mutaktor-pitest-filter` | `mutaktor-pitest-filter.jar` | PIT plugin JAR loaded at mutation-testing runtime |
 | `mutaktor-annotations` | `mutaktor-annotations.jar` | `@MutationCritical` and `@SuppressMutations` annotations |
 | `build-logic` | (internal) | Shared Kotlin + JVM toolchain conventions |
@@ -176,7 +176,7 @@ kotest-assertions     = { module = "io.kotest:kotest-assertions-core", version.r
 ### Language
 
 - **Kotlin only.** No Groovy, no Java in production code.
-- Package names use underscores due to the GitHub username: `io.github.dantte_lp.mutaktor`.
+- Package names use underscores due to the GitHub username: `io.github.ioplane.mutaktor`.
 
 ### Gradle Provider API
 
@@ -304,7 +304,7 @@ class MutaktorPluginFunctionalTest {
         projectDir.resolve("build.gradle.kts").writeText("""
             plugins {
                 java
-                id("io.github.dantte-lp.mutaktor")
+                id("io.github.ioplane.mutaktor")
             }
             mutaktor {
                 targetClasses.set(setOf("com.example.*"))
@@ -387,12 +387,12 @@ Add a row to the filter table in `docs/en/03-kotlin-filters.md` and update `CHAN
 
 ## Adding New Report Formats
 
-Report converters live in `mutaktor-gradle-plugin/src/main/kotlin/io/github/dantte_lp/mutaktor/report/`.
+Report converters live in `mutaktor-gradle-plugin/src/main/kotlin/io/github/ioplane/mutaktor/report/`.
 
 ### Step 1 — Create the converter object
 
 ```kotlin
-package io.github.dantte_lp.mutaktor.report
+package io.github.ioplane.mutaktor.report
 
 import java.io.File
 

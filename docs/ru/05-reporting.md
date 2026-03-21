@@ -165,7 +165,7 @@ start build\reports\mutaktor\index.html         # Windows
       "driver": {
         "name": "Mutaktor (PIT)",
         "version": "1.23.0",
-        "informationUri": "https://github.com/dantte-lp/mutaktor"
+        "informationUri": "https://github.com/ioplane/mutaktor"
       }
     },
     "results": [
@@ -350,7 +350,7 @@ mutaktor {
 | Переменная | Источник | Описание |
 |------------|---------|----------|
 | `GITHUB_TOKEN` | `${{ secrets.GITHUB_TOKEN }}` | Персональный токен доступа или токен рабочего процесса с разрешением `checks: write` |
-| `GITHUB_REPOSITORY` | Встроенная переменная GitHub Actions | Формат `owner/repo`, например `dantte-lp/mutaktor` |
+| `GITHUB_REPOSITORY` | Встроенная переменная GitHub Actions | Формат `owner/repo`, например `ioplane/mutaktor` |
 | `GITHUB_SHA` | Встроенная переменная GitHub Actions | SHA коммита, запустившего рабочий процесс |
 
 ### Пакетная обработка аннотаций

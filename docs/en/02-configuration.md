@@ -26,7 +26,7 @@ All plugin options are declared in the `mutaktor` extension block inside your `b
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "0.2.0"
+    id("io.github.ioplane.mutaktor") version "0.2.0"
 }
 
 mutaktor {
@@ -45,7 +45,7 @@ mutaktor {
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
+    id 'io.github.ioplane.mutaktor' version '0.2.0'
 }
 
 mutaktor {
@@ -458,14 +458,14 @@ The `mutaktor-annotations` module provides source-level annotations for fine-gra
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("io.github.dantte-lp.mutaktor:mutaktor-annotations:0.2.0")
+    implementation("io.github.ioplane.mutaktor:mutaktor-annotations:0.2.0")
 }
 ```
 
 ```groovy
 // build.gradle
 dependencies {
-    implementation 'io.github.dantte-lp.mutaktor:mutaktor-annotations:0.2.0'
+    implementation 'io.github.ioplane.mutaktor:mutaktor-annotations:0.2.0'
 }
 ```
 
@@ -474,7 +474,7 @@ dependencies {
 Marks code that must achieve a 100% mutation score. The build fails if any mutant survives in annotated code.
 
 ```kotlin
-import io.github.dantte_lp.mutaktor.annotations.MutationCritical
+import io.github.ioplane.mutaktor.annotations.MutationCritical
 
 @MutationCritical(reason = "Core authentication logic — all mutations must be killed")
 class AuthService {
@@ -494,7 +494,7 @@ fun computeHash(input: String): String {
 Excludes a class or method from mutation analysis entirely. Use sparingly and always document the reason.
 
 ```kotlin
-import io.github.dantte_lp.mutaktor.annotations.SuppressMutations
+import io.github.ioplane.mutaktor.annotations.SuppressMutations
 
 @SuppressMutations(reason = "Adapter for legacy API — logic is integration-tested externally")
 class LegacyApiAdapter {
@@ -522,7 +522,7 @@ fun formatDisplayName(first: String, last: String): String = "$last, $first"
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "0.2.0"
+    id("io.github.ioplane.mutaktor") version "0.2.0"
 }
 
 mutaktor {
@@ -580,7 +580,7 @@ mutaktor {
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
+    id 'io.github.ioplane.mutaktor' version '0.2.0'
 }
 
 mutaktor {
