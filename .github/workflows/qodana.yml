@@ -24,7 +24,7 @@ jobs:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.3
         with:
-          args: --linter,jetbrains/qodana-jvm-community:2025.3
+          args: --linter,jetbrains/qodana-jvm-community:2024.3  # 2025.3 has IBM_SEMERU bug with Gradle 9.4
           pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
