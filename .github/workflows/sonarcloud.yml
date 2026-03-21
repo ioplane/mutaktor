@@ -28,7 +28,7 @@ jobs:
         run: ./gradlew check jacocoTestReport --no-daemon
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.2.0  # pinned — v5.0 has argument injection vuln
+        uses: SonarSource/sonarqube-scan-action@v6.0.0  # pinned — v5.0 has argument injection vuln
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
