@@ -184,7 +184,8 @@ mutaktor/
 | 7.3 | Smart incremental via Gradle build cache | Build service | Cache hit when source unchanged |
 | 7.4 | Performance benchmark vs gradle-pitest-plugin | Benchmark test | Measured comparison |
 
-### Sprint 8: Multi-Module + Polish (Week 9-10)
+### Sprint 8: Multi-Module + Polish — DONE 2026-03-21
+**Result:** 2 tests, MutaktorAggregatePlugin + release.yml + README.
 **Goal:** Aggregation, docs, Plugin Portal readiness.
 
 | # | Task | Files | Exit criteria |

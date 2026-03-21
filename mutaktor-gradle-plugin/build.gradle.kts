@@ -21,6 +21,13 @@ gradlePlugin {
             description = "Gradle plugin for PIT mutation testing with git-aware analysis, Kotlin junk filtering, and CI/CD integration"
             tags = listOf("testing", "mutation-testing", "pitest", "kotlin", "pit")
         }
+        create("mutaktorAggregate") {
+            id = "io.github.dantte-lp.mutaktor.aggregate"
+            implementationClass = "io.github.dantte_lp.mutaktor.MutaktorAggregatePlugin"
+            displayName = "Mutaktor Aggregate — Multi-module mutation reports"
+            description = "Aggregates mutation testing reports from subprojects"
+            tags = listOf("testing", "mutation-testing", "pitest", "aggregate")
+        }
     }
 }
 

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Quality gate: fail build if mutation score below threshold (Sprint 6)
+- Multi-module aggregation: `mutateAggregate` task collects subproject reports (Sprint 8)
+- Release workflow: GitHub Actions with JDK 17+25 matrix (Sprint 8)
 - Extreme mutation mode: 6 method-body removal mutators, `extreme.set(true)` (Sprint 7)
 - GitHub Checks API reporter with inline PR annotations for survived mutants (Sprint 6)
 - mutation-testing-elements JSON report converter — Stryker Dashboard compatible (Sprint 5)
