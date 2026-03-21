@@ -1,6 +1,5 @@
 package io.github.dantte_lp.mutaktor.report
 
-import io.github.dantte_lp.mutaktor.util.JsonBuilder.escapeJson
 import io.github.dantte_lp.mutaktor.util.JsonBuilder.quote
 import io.github.dantte_lp.mutaktor.util.SourcePathResolver
 import io.github.dantte_lp.mutaktor.util.XmlParser
@@ -88,7 +87,7 @@ public object MutationElementsConverter {
         for ((fileIndex, entry) in fileEntries.withIndex()) {
             val (filePath, mutations) = entry
             val sourceFile = sourceRoot.resolve(filePath)
-            val source = if (sourceFile.exists()) escapeJson(sourceFile.readText()) else ""
+            val source = if (sourceFile.exists()) sourceFile.readText() else ""
 
             sb.appendLine("""    ${quote(filePath)}: {""")
             sb.appendLine("""      "language": "java",""")
@@ -100,13 +99,13 @@ public object MutationElementsConverter {
                 sb.appendLine("        {")
                 sb.appendLine("""          "id": "${fileIndex * 1000 + mutantIndex + 1}",""")
                 sb.appendLine("""          "mutatorName": ${quote(simplifyMutatorName(mutation.mutator))},""")
-                sb.appendLine("""          "replacement": ${quote(escapeJson(mutation.description))},""")
+                sb.appendLine("""          "replacement": ${quote(mutation.description)},""")
                 sb.appendLine("""          "location": { "start": { "line": ${mutation.lineNumber}, "column": 1 }, "end": { "line": ${mutation.lineNumber}, "column": 100 } },""")
                 sb.appendLine("""          "status": ${quote(mapStatus(mutation.status))},""")
                 val killedBy = mutation.killingTest?.takeIf { it.isNotBlank() }
                 if (killedBy != null) {
                     val testName = killedBy.substringBefore("(")
-                    sb.appendLine("""          "killedBy": [${quote(escapeJson(testName))}]""")
+                    sb.appendLine("""          "killedBy": [${quote(testName)}]""")
                 } else {
                     sb.appendLine("""          "killedBy": []""")
                 }

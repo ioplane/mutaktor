@@ -74,7 +74,7 @@ public object SarifConverter {
         sb.appendLine("""    "tool": {""")
         sb.appendLine("""      "driver": {""")
         sb.appendLine("""        "name": "Mutaktor (PIT)",""")
-        sb.appendLine("""        "version": ${quote(escapeJson(pitVersion))},""")
+        sb.appendLine("""        "version": ${quote(pitVersion)},""")
         sb.appendLine("""        "informationUri": "https://github.com/dantte-lp/mutaktor"""")
         sb.appendLine("      }")
         sb.appendLine("    },")

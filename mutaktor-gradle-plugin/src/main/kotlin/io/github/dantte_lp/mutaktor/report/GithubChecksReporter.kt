@@ -1,6 +1,5 @@
 package io.github.dantte_lp.mutaktor.report
 
-import io.github.dantte_lp.mutaktor.util.JsonBuilder.escapeJson
 import io.github.dantte_lp.mutaktor.util.JsonBuilder.quote
 import java.net.URI
 import java.net.http.HttpClient
@@ -116,12 +115,12 @@ public object GithubChecksReporter {
     ): String = buildString {
         append('{')
         append(""""name":"Mutaktor",""")
-        append(""""head_sha":${quote(escapeJson(sha))},""")
+        append(""""head_sha":${quote(sha)},""")
         append(""""status":"completed",""")
         append(""""conclusion":${quote(conclusion)},""")
         append(""""output":{""")
-        append(""""title":${quote(escapeJson(title))},""")
-        append(""""summary":${quote(escapeJson(summary))},""")
+        append(""""title":${quote(title)},""")
+        append(""""summary":${quote(summary)},""")
         append(""""annotations":[$annotationsJson]""")
         append('}')
         append('}')
@@ -134,8 +133,8 @@ public object GithubChecksReporter {
     ): String = buildString {
         append('{')
         append(""""output":{""")
-        append(""""title":${quote(escapeJson(title))},""")
-        append(""""summary":${quote(escapeJson(summary))},""")
+        append(""""title":${quote(title)},""")
+        append(""""summary":${quote(summary)},""")
         append(""""annotations":[$annotationsJson]""")
         append('}')
         append('}')
@@ -145,11 +144,11 @@ public object GithubChecksReporter {
         mutants.joinToString(",") { mutant ->
             buildString {
                 append('{')
-                append(""""path":${quote(escapeJson(mutant.file))},""")
+                append(""""path":${quote(mutant.file)},""")
                 append(""""start_line":${mutant.line},""")
                 append(""""end_line":${mutant.line},""")
                 append(""""annotation_level":"warning",""")
-                append(""""message":${quote(escapeJson("[${simplifyMutator(mutant.mutator)}] ${mutant.description}"))}""")
+                append(""""message":${quote("[${simplifyMutator(mutant.mutator)}] ${mutant.description}")}""")
                 append('}')
             }
         }
