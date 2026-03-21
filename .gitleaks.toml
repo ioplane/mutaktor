@@ -1,0 +1,6 @@
+[extend]
+# Use default gitleaks rules
+
+[allowlist]
+description = "mutaktor allowlist"
+paths = []

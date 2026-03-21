@@ -223,6 +223,50 @@ mutaktor/
 | **Advanced** | v0.6.0 | Sprint 7 complete | Extreme mutation, smart incremental |
 | **1.0 GA** | v1.0.0 | Sprint 8 complete | Multi-module, Plugin Portal, stable API |
 
+## Post-1.0 Roadmap: Killer Features
+
+### v1.1.0 — GraalVM Fix + Quality Ratchet
+| # | Feature | Effort | Impact |
+|---|---------|--------|--------|
+| 9.1 | `javaLauncher` property — Gradle Toolchain for PIT child JVM (fixes GraalVM jrt:/ issue) | Easy | HIGH |
+| 9.2 | Per-package mutation ratchet — `.mutaktor-baseline.json` with per-package thresholds | Easy | HIGH |
+| 9.3 | `@MutationCritical` / `@SuppressMutations` annotations — source-level contracts | Easy | HIGH |
+| 9.4 | QA fixes: MutaktorTask tests, hardcoded src/main/java fix, config cache fix | Medium | HIGH |
+| 9.5 | Extract shared XML/JSON utilities (DRY) | Easy | MEDIUM |
+
+### v1.2.0 — MCP Server + AI Integration
+| # | Feature | Effort | Impact |
+|---|---------|--------|--------|
+| 10.1 | MCP server: `list-surviving-mutants`, `get-mutant-context`, `mutation-score` | Medium | HIGH |
+| 10.2 | LLM Mutant Killer — auto-generate tests for surviving mutants via LLM | Medium | HIGH |
+| 10.3 | Mutation debt tracker — persistent across-build mutant tracking | Medium | HIGH |
+| 10.4 | Difficulty scoring — prioritize surviving mutants by kill difficulty | Medium | MEDIUM |
+
+### v1.3.0 — Advanced Analytics
+| # | Feature | Effort | Impact |
+|---|---------|--------|--------|
+| 11.1 | Equivalent mutant detector (heuristic + optional LLM) | Hard | HIGH |
+| 11.2 | Test impact heat map — visualize test-to-code coupling | Medium | MEDIUM |
+| 11.3 | Temurin JDK 25 in dev container alongside GraalVM | Easy | MEDIUM |
+
+### GraalVM jrt:/ Issue (discovered by QA)
+
+PIT spawns a child JVM (minion) that recomputes classpath. GraalVM stores classes
+in `jrt:/` (JPMS module paths), not JAR files. Gradle's `ClasspathInferer` can't
+handle `jrt:/` → PIT crashes.
+
+**Fix:** `javaLauncher` property via Gradle Java Toolchain API. Users specify
+Temurin for PIT child process, GraalVM for build:
+
+```kotlin
+mutaktor {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(25))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    })
+}
+```
+
 ## Risk Register
 
 | Risk | Impact | Mitigation |
