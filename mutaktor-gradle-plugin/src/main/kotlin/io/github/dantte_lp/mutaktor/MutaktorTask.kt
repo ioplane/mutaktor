@@ -216,7 +216,7 @@ public abstract class MutaktorTask : JavaExec() {
         logger.lifecycle(
             "Mutaktor: launching PIT {} with {} argument(s)",
             pitVersion.getOrElse("(unknown)"),
-            args?.size ?: 0,
+            args.size,
         )
 
         super.exec()

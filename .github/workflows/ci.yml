@@ -6,13 +6,13 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read
-  checks: write
-  security-events: write
+permissions: {}
 
 jobs:
   build-and-test:
+    permissions:
+      contents: read
+      checks: write
     runs-on: ubuntu-latest
     strategy:
       matrix:

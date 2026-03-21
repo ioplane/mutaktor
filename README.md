@@ -4,14 +4,16 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Kotlin-2.3-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin 2.3">
-  <img src="https://img.shields.io/badge/Gradle-9.4.1-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle 9.4.1">
-  <img src="https://img.shields.io/badge/PIT-1.23.0-green?style=for-the-badge" alt="PIT 1.23.0">
-  <img src="https://img.shields.io/badge/JDK-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="JDK 17+">
+  <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.3-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin 2.3"></a>
+  <a href="https://gradle.org"><img src="https://img.shields.io/badge/Gradle-9.4.1-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle 9.4.1"></a>
+  <a href="https://pitest.org"><img src="https://img.shields.io/badge/PIT-1.23.0-green?style=for-the-badge" alt="PIT 1.23.0"></a>
+  <a href="https://openjdk.org"><img src="https://img.shields.io/badge/JDK-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="JDK 17+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge" alt="Apache 2.0"></a>
-  <img src="https://img.shields.io/badge/CI-passing-brightgreen?style=for-the-badge&logo=github-actions&logoColor=white" alt="CI">
-  <img src="https://img.shields.io/badge/Codecov-pending-lightgrey?style=for-the-badge&logo=codecov&logoColor=white" alt="Codecov">
-  <img src="https://img.shields.io/badge/OpenSSF_Scorecard-pending-lightgrey?style=for-the-badge" alt="OpenSSF Scorecard">
+  <br>
+  <a href="https://github.com/ioplane/mutaktor/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ioplane/mutaktor/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI"></a>
+  <a href="https://codecov.io/gh/ioplane/mutaktor"><img src="https://img.shields.io/codecov/c/github/ioplane/mutaktor?style=for-the-badge&logo=codecov&logoColor=white" alt="Codecov"></a>
+  <a href="https://sonarcloud.io/summary/new_code?id=ioplane_mutaktor"><img src="https://img.shields.io/sonar/quality_gate/ioplane_mutaktor?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge&logo=sonarcloud&logoColor=white" alt="Quality Gate"></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/ioplane/mutaktor"><img src="https://img.shields.io/ossf-scorecard/github.com/ioplane/mutaktor?style=for-the-badge&label=OpenSSF" alt="OpenSSF Scorecard"></a>
 </p>
 
 ---
