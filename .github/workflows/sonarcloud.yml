@@ -1,0 +1,42 @@
+name: SonarCloud
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for accurate blame
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and test with coverage
+        run: ./gradlew check jacocoTestReport --no-daemon
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=dantte-lp_mutaktor
+            -Dsonar.organization=dantte-lp
+            -Dsonar.sources=mutaktor-gradle-plugin/src/main,mutaktor-pitest-filter/src/main,mutaktor-annotations/src/main
+            -Dsonar.tests=mutaktor-gradle-plugin/src/test,mutaktor-gradle-plugin/src/functionalTest,mutaktor-pitest-filter/src/test
+            -Dsonar.kotlin.file.suffixes=.kt,.kts
+            -Dsonar.coverage.jacoco.xmlReportPaths=**/build/reports/jacoco/test/jacocoTestReport.xml
+            -Dsonar.exclusions=build-logic/**,**/build/**,docs/**
