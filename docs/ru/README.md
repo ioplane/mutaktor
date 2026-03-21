@@ -6,16 +6,47 @@ sidebar_label: Индекс
 
 # Документация Mutaktor
 
-![Kotlin](https://img.shields.io/badge/Kotlin-2.3-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
-![Gradle](https://img.shields.io/badge/Gradle-9.4.1-02303A?style=flat-square&logo=gradle&logoColor=white)
-![PIT](https://img.shields.io/badge/PIT-1.23.0-green?style=flat-square)
-![JDK](https://img.shields.io/badge/JDK-17%2B-ED8B00?style=flat-square&logo=openjdk&logoColor=white)
-![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)
-![Lang](https://img.shields.io/badge/Lang-Русский-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-7F52FF?style=for-the-badge)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.3-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.4.1-02303A?style=for-the-badge&logo=gradle&logoColor=white)
+![PIT](https://img.shields.io/badge/PIT-1.23.0-E37400?style=for-the-badge)
+![JDK](https://img.shields.io/badge/JDK-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-135-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)
+![Lang-Русский](https://img.shields.io/badge/Lang-Русский-blue?style=for-the-badge)
 
 > Также доступно на: [English](../en/README.md)
 
-**mutaktor** — это Kotlin-first Gradle-плагин для мутационного тестирования с помощью [PIT](https://pitest.org/). Он добавляет git-aware-ограничение области анализа, фильтрацию Kotlin-мусорных мутаций, стандартизированную отчётность (SARIF, mutation-testing-elements JSON) и интеграцию с GitHub CI/CD поверх проверенного мутационного движка PIT.
+**Mutaktor** — это Kotlin-first плагин для Gradle, предназначенный для мутационного тестирования с помощью [PIT](https://pitest.org/). Он оборачивает проверенный движок мутаций PIT возможностями ограничения области анализа через git, фильтрацией «мусорных» мутаций Kotlin, полностью настроенным конвейером постобработки (JSON, SARIF, quality gate, ratchet, GitHub Checks) и автоопределением GraalVM — без каких-либо внешних зависимостей во время выполнения.
+
+---
+
+## Что такое мутационное тестирование?
+
+Мутационное тестирование проверяет качество набора тестов путём систематического введения небольших изменений — **мутантов** — в исходный код и верификации того, что хотя бы один тест завершается ошибкой для каждого изменения. Мутант, которого ни один тест не обнаружил, называется **выжившим мутантом**: это пробел в покрытии тестами, который не выявляется обычным покрытием по строкам кода.
+
+**Оценка мутаций** — это процент мутантов, которые были уничтожены:
+
+```
+оценка мутаций = (уничтоженные мутанты / всего мутантов) × 100
+```
+
+---
+
+## Основные возможности v0.2.0
+
+| Возможность | Описание |
+|-------------|----------|
+| Конвейер постобработки | JSON + SARIF + quality gate + ratchet + GitHub Checks, встроенные в `exec()` |
+| `mutationScoreThreshold` | Завершает сборку с ошибкой, если оценка мутаций опускается ниже заданного процента |
+| `jsonReport` / `sarifReport` | Первоклассные свойства DSL для включения форматов отчётов |
+| Покомпонентный ratchet | `ratchetEnabled`, `ratchetBaseline`, `ratchetAutoUpdate` предотвращают регрессию оценки |
+| Аннотация `@MutationCritical` | Помечает код, который должен достичь 100% оценки мутаций |
+| Аннотация `@SuppressMutations` | Исключает конкретные методы или классы из анализа |
+| Модуль `mutaktor-annotations` | Отдельный JAR с аннотациями без зависимости от Gradle |
+| Автоопределение GraalVM | `GraalVmDetector` переключает PIT на стандартный JDK при сборке под GraalVM + Quarkus |
+| Свойство `javaLauncher` | Полная интеграция с Gradle Toolchain API для дочернего JVM процесса PIT |
+| Защита от пустого `targetClasses` | Завершается с понятным сообщением, если классы не настроены |
 
 ---
 
@@ -26,19 +57,19 @@ graph TD
     INDEX["README.md\nИндекс документации"]
 
     subgraph "Начало работы"
-        G01["01-getting-started.md\nУстановка и быстрый старт"]
+        G01["01-architecture.md\nАрхитектура плагина"]
         G02["02-configuration.md\nПолный справочник DSL"]
     end
 
-    subgraph "Основные функции"
-        F03["03-kotlin-filter.md\nKotlin Junk Filter"]
-        F04["04-git-diff.md\nАнализ в рамках git-диффа"]
-        F05["05-reports.md\nОтчёты и Quality Gate"]
+    subgraph "Основные возможности"
+        F03["03-kotlin-filters.md\nФильтр мусорных мутаций Kotlin"]
+        F04["04-git-integration.md\nАнализ в рамках git-diff"]
+        F05["05-reporting.md\nОтчёты и Quality Gate"]
     end
 
     subgraph "Разработка и эксплуатация"
-        D06["06-development.md\nРуководство по разработке"]
-        D07["07-ci-cd.md\nCI/CD-интеграция"]
+        D06["06-development.md\nРуководство разработчика"]
+        D07["07-ci-cd.md\nИнтеграция с CI/CD"]
         D08["08-changelog.md\nChangelog и релизы"]
     end
 
@@ -74,16 +105,60 @@ graph TD
 
 ## Индекс документов
 
-| # | Документ | Аудитория | Описание |
-|---|----------|----------|-------------|
-| 01 | [Начало работы](01-getting-started.md) | Все пользователи | Установка плагина, настройка `build.gradle.kts`, первый запуск `./gradlew mutate` |
-| 02 | [Конфигурация](02-configuration.md) | Все пользователи | Полный справочник DSL: все 24 свойства, типы, значения по умолчанию, примеры |
-| 03 | [Kotlin Junk Filter](03-kotlin-filter.md) | Kotlin-разработчики | Как `KotlinJunkFilter` устраняет ложноположительные мутации из байткода, генерируемого компилятором |
-| 04 | [Git-Diff Analysis](04-git-diff.md) | CI/CD-пользователи | Ограничение мутирования изменёнными классами с помощью свойства `since` и `GitDiffAnalyzer` |
-| 05 | [Отчёты и Quality Gate](05-reports.md) | CI/CD-пользователи | HTML, XML, SARIF, mutation-testing-elements JSON; порог quality gate |
-| 06 | [Руководство по разработке](06-development.md) | Контрибьюторы | Команды сборки, структура проекта, соглашения о коде, как добавлять фильтры и форматы отчётов |
-| 07 | [CI/CD-интеграция](07-ci-cd.md) | DevOps / контрибьюторы | GitHub Actions CI и release-воркфлоу; загрузка SARIF; настройка GitHub Checks API |
-| 08 | [Руководство по Changelog](08-changelog.md) | Контрибьюторы | Формат Keep a Changelog, политика SemVer, процесс релиза с автоматизацией на основе тегов |
+| № | Документ | Аудитория | Описание |
+|---|----------|-----------|----------|
+| 01 | [Архитектура](01-architecture.md) | Все пользователи | Модули плагина, поток данных, архитектура classpath, жизненный цикл |
+| 02 | [Конфигурация](02-configuration.md) | Все пользователи | Полный справочник DSL: все 32 свойства, типы, значения по умолчанию, примеры |
+| 03 | [Фильтр мусорных мутаций Kotlin](03-kotlin-filters.md) | Разработчики Kotlin | Как `KotlinJunkFilter` устраняет ложноположительные мутации из байткода, генерируемого компилятором |
+| 04 | [Анализ в рамках git-diff](04-git-integration.md) | Пользователи CI/CD | Ограничение мутаций изменёнными классами через `since` и `GitDiffAnalyzer` |
+| 05 | [Отчёты и Quality Gate](05-reporting.md) | Пользователи CI/CD | HTML, XML, SARIF, JSON, quality gate, ratchet, GitHub Checks |
+| 06 | [Руководство разработчика](06-development.md) | Контрибьюторы | Команды сборки, структура проекта, соглашения, расширение плагина |
+| 07 | [Интеграция с CI/CD](07-ci-cd.md) | DevOps / контрибьюторы | Рабочие процессы GitHub Actions CI и release; загрузка SARIF; настройка GitHub Checks |
+| 08 | [Руководство по Changelog](08-changelog.md) | Контрибьюторы | Формат Keep a Changelog, политика SemVer, процесс выпуска релизов |
+
+---
+
+## Быстрый старт
+
+### Kotlin DSL
+
+```kotlin
+// build.gradle.kts
+plugins {
+    kotlin("jvm") version "2.3.0"
+    id("io.github.dantte-lp.mutaktor") version "0.2.0"
+}
+
+mutaktor {
+    targetClasses = setOf("com.example.*")
+    mutationScoreThreshold = 80          // завершить сборку ниже 80%
+    since = "main"                       // мутировать только изменённые классы
+    kotlinFilters = true                 // подавить шум компилятора Kotlin
+    jsonReport = true                    // JSON mutation-testing-elements
+    sarifReport = true                   // SARIF для GitHub Code Scanning
+}
+```
+
+```bash
+./gradlew mutate
+```
+
+### Groovy DSL
+
+```groovy
+// build.gradle
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
+    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
+}
+
+mutaktor {
+    targetClasses = ['com.example.*'] as Set
+    mutationScoreThreshold = 80
+    since = 'main'
+    kotlinFilters = true
+}
+```
 
 ---
 
@@ -91,20 +166,22 @@ graph TD
 
 ### Для пользователей плагина
 
-- **Установить плагин** — [Начало работы](01-getting-started.md)
-- **Настроить область мутирования** — [Конфигурация: targetClasses](02-configuration.md#targetclasses)
-- **Мутировать только изменённый код** — [Git-Diff Analysis](04-git-diff.md)
-- **Интеграция с проверками GitHub PR** — [CI/CD: GitHub Checks API](07-ci-cd.md#github-checks-api)
-- **Загрузить SARIF в Code Scanning** — [CI/CD: загрузка SARIF](07-ci-cd.md#sarif-upload-to-code-scanning)
-- **Завершать сборку ниже порога мутаций** — [Отчёты: Quality Gate](05-reports.md)
+- **Настроить область мутаций** — [Конфигурация: targetClasses](02-configuration.md#targetclasses)
+- **Мутировать только изменённый код** — [Анализ в рамках git-diff](04-git-integration.md)
+- **Завершать сборку ниже порога** — [Конфигурация: mutationScoreThreshold](02-configuration.md#mutationscorethreshold)
+- **Предотвратить регрессию оценки** — [Отчёты: Ratchet](05-reporting.md#per-package-ratchet)
+- **Загрузить SARIF в Code Scanning** — [CI/CD: Загрузка SARIF](07-ci-cd.md#sarif-upload-to-code-scanning)
+- **Интеграция с GitHub PR Checks** — [CI/CD: GitHub Checks API](07-ci-cd.md#github-checks-api)
+- **Пропустить ошибки classpath GraalVM** — [Конфигурация: javaLauncher](02-configuration.md#javalauncher)
+- **Пометить критичный код** — [Конфигурация: Модуль аннотаций](02-configuration.md#annotations-module)
 
 ### Для контрибьюторов
 
-- **Настроить локальную разработку** — [Руководство по разработке](06-development.md#getting-started)
-- **Запустить тесты** — [Руководство по разработке: команды сборки](06-development.md#build-commands)
-- **Добавить новый паттерн фильтрации** — [Руководство по разработке: добавление фильтров](06-development.md#adding-new-filter-patterns)
-- **Добавить новый формат отчёта** — [Руководство по разработке: добавление форматов](06-development.md#adding-new-report-formats)
-- **Выпустить новую версию** — [Руководство по Changelog: процесс релиза](08-changelog.md#release-process)
+- **Настроить локальную разработку** — [Руководство разработчика: Начало работы](06-development.md#getting-started)
+- **Запустить тесты** — [Руководство разработчика: Команды сборки](06-development.md#build-commands)
+- **Добавить новый шаблон фильтра** — [Руководство разработчика: Добавление новых шаблонов фильтров](06-development.md#adding-new-filter-patterns)
+- **Добавить новый формат отчёта** — [Руководство разработчика: Добавление новых форматов отчётов](06-development.md#adding-new-report-formats)
+- **Выпустить новую версию** — [Руководство по Changelog: Процесс выпуска](08-changelog.md#release-process)
 
 ---
 
@@ -114,67 +191,75 @@ graph TD
 graph TB
     subgraph "Сборка Gradle"
         PLG["MutaktorPlugin\napply()"]
-        EXT["mutaktor { ... }\nMutaktorExtension\n24 properties"]
+        EXT["mutaktor { ... }\nMutaktorExtension\n32 свойства"]
         TSK["задача mutate\nMutaktorTask\n@CacheableTask"]
         GIT["GitDiffAnalyzer\nchangedClasses()"]
+        GVM["GraalVmDetector\nавто-выбор JDK"]
         CFG["конфигурация mutaktor\nPIT classpath"]
     end
 
-    subgraph "Процесс PIT (дочерняя JVM)"
+    subgraph "Процесс PIT (дочерний JVM)"
         PIT["PIT CLI\nMutationCoverageReport"]
-        FLT["KotlinJunkFilter\nMutationInterceptor SPI\n5 паттернов"]
-        RPT["mutations.xml\nHTML-отчёт"]
+        FLT["KotlinJunkFilter\nMutationInterceptor SPI\n5 шаблонов"]
+        RPT["mutations.xml\nHTML отчёт"]
     end
 
-    subgraph "Пост-обработка"
-        SAR["SarifConverter\nSARIF 2.1.0"]
-        JSON["MutationElementsConverter\nmutation-testing-elements"]
-        QG["QualityGate\nпорог score"]
+    subgraph "Конвейер постобработки"
+        JSON["MutationElementsConverter\nmutations.json"]
+        SAR["SarifConverter\nmutations.sarif.json"]
+        QG["QualityGate\nпороговое значение оценки"]
+        RAT["MutationRatchet\nпокомпонентный нижний порог"]
         GH["GithubChecksReporter\nCheck Run + аннотации"]
     end
 
     PLG --> EXT
     PLG --> TSK
     PLG --> CFG
-    EXT -->|"Provider chains"| TSK
+    GVM -->|"авто-выбор launcher"| TSK
+    EXT -->|"цепочки Provider"| TSK
     GIT -->|"since → targetClasses"| TSK
-    CFG -->|"PIT + JUnit5 JARs"| TSK
+    CFG -->|"PIT + JARы JUnit5"| TSK
     TSK -->|"JavaExec"| PIT
-    FLT -->|"SPI загружается во время выполнения"| PIT
+    FLT -->|"загружается SPI во время выполнения"| PIT
     PIT --> RPT
-    RPT --> SAR
     RPT --> JSON
+    RPT --> SAR
     RPT --> QG
+    RPT --> RAT
     QG --> GH
 
     style PLG fill:#7F52FF,color:#fff
     style TSK fill:#02303A,color:#fff
     style PIT fill:#e37400,color:#fff
     style GH fill:#181717,color:#fff
+    style RAT fill:#2d8a4e,color:#fff
 ```
 
 ---
 
 ## Обзор модулей
 
-| Модуль | Plugin ID | Назначение |
-|--------|-----------|---------|
-| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Применяется к проектам потребителей; регистрирует задачу `mutate` |
+| Модуль | Plugin ID / Артефакт | Назначение |
+|--------|----------------------|------------|
+| `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor` | Применяется в проектах-потребителях; регистрирует задачу `mutate` |
 | `mutaktor-gradle-plugin` | `io.github.dantte-lp.mutaktor.aggregate` | Применяется к корневому проекту; регистрирует задачу `mutateAggregate` |
-| `mutaktor-pitest-filter` | _(PIT SPI)_ | Загружается PIT во время выполнения; фильтрует мутации, генерируемые компилятором Kotlin |
-| `build-logic` | _(внутренний)_ | Convention-плагин для общего Kotlin + JVM toolchain |
+| `mutaktor-pitest-filter` | PIT SPI JAR | Загружается PIT во время выполнения; фильтрует мутации, генерируемые компилятором Kotlin |
+| `mutaktor-annotations` | `mutaktor-annotations.jar` | Аннотации `@MutationCritical` и `@SuppressMutations` |
+| `build-logic` | внутренний | Общий конвенционный плагин для toolchain Kotlin + JVM |
 
 ---
 
 ## Требования
 
 | Требование | Минимум | Протестировано с |
-|-------------|---------|-------------|
+|------------|---------|-----------------|
 | Gradle | 9.0 | 9.4.1 |
 | JDK | 17 | 17, 21, 25 (Temurin) |
 | Kotlin | 1.8+ | 2.3.0 |
 | PIT | 1.19.0 | 1.23.0 |
 | pitest-junit5-plugin | 1.1.0 | 1.2.3 |
+
+> **Примечание:** GraalVM поддерживается в качестве JDK для сборки, когда настроен `javaLauncher` или автоматически обнаружен GraalVM + Quarkus. Сам PIT требует стандартного JVM HotSpot для дочернего процесса minion.
 
 ---
 

@@ -1,23 +1,23 @@
 ---
 id: changelog
-title: Руководство по changelog
+title: Руководство по Changelog
 sidebar_label: Changelog
 ---
 
-# Руководство по changelog
+# Руководство по Changelog
 
-![Keep a Changelog](https://img.shields.io/badge/Keep_a_Changelog-1.1.0-orange?style=flat-square)
-![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=flat-square)
-![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-181717?style=flat-square&logo=github)
-![Lang](https://img.shields.io/badge/Lang-Русский-blue)
+![Keep a Changelog](https://img.shields.io/badge/Keep_a_Changelog-1.1.0-orange?style=for-the-badge)
+![SemVer](https://img.shields.io/badge/SemVer-2.0.0-blue?style=for-the-badge)
+![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-181717?style=for-the-badge&logo=github)
+![Lang-Русский](https://img.shields.io/badge/Lang-Русский-blue?style=for-the-badge)
 
-Этот документ объясняет формат changelog, политику версионирования и автоматизированный процесс релиза для mutaktor.
+В этом документе описывается формат changelog, политика версионирования и автоматизированный процесс выпуска релизов Mutaktor.
 
 ---
 
 ## Формат
 
-`CHANGELOG.md` mutaktor следует стандарту [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
+`CHANGELOG.md` Mutaktor следует формату [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 
 ### Структура
 
@@ -32,50 +32,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- New feature or enhancement
+- Новая функция или улучшение
 
 ### Changed
-- Change to existing behavior
+- Изменение существующего поведения
 
 ### Deprecated
-- Features that will be removed in a future release
+- Функции, которые будут удалены в будущем релизе
 
 ### Removed
-- Features removed in this release
+- Функции, удалённые в этом релизе
 
 ### Fixed
-- Bug fixes
+- Исправления ошибок
 
 ### Security
-- Security fixes
+- Исправления, связанные с безопасностью
 
-## [1.2.0] — 2026-04-01
+## [0.2.0] — 2026-03-21
 
 ### Added
-- ...
+- Конвейер постобработки: JSON, SARIF, quality gate, ratchet, GitHub Checks
 
-[Unreleased]: https://github.com/dantte-lp/mutaktor/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/dantte-lp/mutaktor/compare/v1.1.0...v1.2.0
+[Unreleased]: https://github.com/dantte-lp/mutaktor/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/dantte-lp/mutaktor/compare/v0.1.0...v0.2.0
 ```
 
 ### Правила использования разделов
 
 | Раздел | Когда использовать |
-|---------|-------------|
-| `Added` | Новые функции, новые DSL-свойства, новые форматы отчётов |
-| `Changed` | Изменения поведения существующих функций, изменения значений по умолчанию |
-| `Deprecated` | Свойства или задачи, запланированные к удалению |
-| `Removed` | Свойства или задачи, которые ранее были помечены как устаревшие |
-| `Fixed` | Исправления ошибок — ссылайтесь на номер issue, если применимо |
-| `Security` | Любые исправления с последствиями для безопасности |
+|--------|-------------------|
+| `Added` | Новые функции, новые DSL-свойства, новые форматы отчётов, новые модули |
+| `Changed` | Изменения поведения в существующих функциях, изменения значений по умолчанию |
+| `Deprecated` | Свойства или задачи, запланированные к удалению в будущей MAJOR-версии |
+| `Removed` | Свойства или задачи, ранее отмеченные как deprecated |
+| `Fixed` | Исправления ошибок — при наличии ссылайтесь на номер issue |
+| `Security` | Любые исправления с последствиями для безопасности (например, защита от XXE, обработка токенов) |
 
-Каждое изменение, видимое пользователю, требует записи в `CHANGELOG.md`. Внутренний рефакторинг, не затрагивающий API плагина, записи не требует.
+Каждое видимое пользователю изменение требует записи в `CHANGELOG.md`. Внутренний рефакторинг, не влияющий на API плагина или поведение для пользователя, не требует записи.
 
 ---
 
 ## Политика версионирования
 
-mutaktor использует [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+Mutaktor следует [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
 ### Формат версии
 
@@ -83,32 +83,31 @@ mutaktor использует [Semantic Versioning 2.0.0](https://semver.org/spe
 MAJOR.MINOR.PATCH[-SNAPSHOT]
 ```
 
-Примеры:
-
 | Версия | Значение |
-|---------|---------|
-| `0.1.0-SNAPSHOT` | Pre-release сборка в разработке (текущая) |
+|--------|----------|
+| `0.1.0-SNAPSHOT` | Сборка для разработки до релиза |
 | `0.1.0` | Первый публичный релиз |
-| `0.2.0` | Новая функция с обратной совместимостью |
-| `1.0.0` | Стабильный публичный API, первый major-релиз |
-| `1.1.0` | Добавлено новое DSL-свойство (обратная совместимость) |
-| `2.0.0` | Ломающее изменение DSL или API задач |
+| `0.2.0` | Новые обратно-совместимые функции (конвейер постобработки, ratchet, аннотации) |
+| `1.0.0` | Стабильный публичный API, первый мажорный релиз |
+| `1.1.0` | Добавлено новое DSL-свойство (обратно-совместимо) |
+| `2.0.0` | Критическое изменение DSL или API задачи |
 
-### Ломающие и не ломающие изменения
+### Критические и некритические изменения
 
-| Тип изменения | Версия |
-|-------------|-------------|
-| Добавить новое опциональное DSL-свойство с конвенцией | MINOR |
+| Тип изменения | Повышение версии |
+|---------------|-----------------|
+| Добавить новое необязательное DSL-свойство с соглашением по умолчанию | MINOR |
 | Добавить новую задачу | MINOR |
+| Добавить новый модуль (`mutaktor-annotations` и т.д.) | MINOR |
 | Удалить или переименовать существующее DSL-свойство | MAJOR |
-| Изменить значение по умолчанию существующего свойства | MAJOR (если меняется поведение) |
-| Исправление ошибки, не меняющее API | PATCH |
-| Новый формат отчёта как opt-in | MINOR |
-| Повышение минимальной версии Gradle/JDK | MAJOR |
+| Изменить значение по умолчанию существующего свойства | MAJOR (если изменяется поведение) |
+| Исправление ошибки без изменения поверхности API | PATCH |
+| Новый формат отчёта как opt-in свойство | MINOR |
+| Требование более новой минимальной версии Gradle или JDK | MAJOR |
 
 ### Политика до 1.0
 
-Пока версия равна `0.x.y`, публичный API ещё не стабилен. Повышения MINOR-версии (`0.1.0` → `0.2.0`) могут включать ломающие изменения. DSL стабилизируется на версии `1.0.0`.
+Пока версия `0.x.y`, публичный API ещё не стабилен. Повышения MINOR-версии (`0.1.0` → `0.2.0`) могут включать критические изменения. DSL стабилизируется в `1.0.0`.
 
 ---
 
@@ -117,37 +116,38 @@ MAJOR.MINOR.PATCH[-SNAPSHOT]
 Версия объявлена в `gradle.properties`:
 
 ```properties
-version=0.1.0-SNAPSHOT
+version=0.2.0
 group=io.github.dantte-lp.mutaktor
 ```
 
-Snapshot-сборки не публикуются на Gradle Plugin Portal. Только теговые релизы создают опубликованные артефакты.
+Snapshot-сборки не публикуются на Gradle Plugin Portal. Только теговые релизы создают публикуемые артефакты.
 
 ---
 
-## Процесс релиза
+## Процесс выпуска
 
 ### Обзор
 
 ```mermaid
 flowchart TD
-    dev["Разработчик сливает PR в main"] --> update["Обновить CHANGELOG.md:\nперенести [Unreleased] → [X.Y.Z]"]
-    update --> bump["Обновить gradle.properties:\nversion=X.Y.Z"]
+    dev["Разработчик сливает PR в main"] --> update["Обновить CHANGELOG.md:\nперенести [Unreleased] → [X.Y.Z] с датой"]
+    update --> bump["Обновить gradle.properties:\nversion=X.Y.Z (убрать -SNAPSHOT)"]
     bump --> commit["git commit -m 'Release X.Y.Z'"]
     commit --> tag["git tag vX.Y.Z"]
     tag --> push["git push origin main --tags"]
-    push --> trigger["release.yml срабатывает\nна тег v*"]
+    push --> trigger["release.yml запускается\nпо тегу v*"]
 
     subgraph "GitHub Actions: release.yml"
-        trigger --> matrix["Матричная сборка\nJDK 17 + 25"]
-        matrix --> testok{Все тесты пройдены?}
-        testok -- Нет --> fail["Воркфлоу завершается с ошибкой\nРелиз не создаётся"]
-        testok -- Да --> jars["Сбор JAR'ов\n(сборка JDK 17)"]
-        jars --> extract["Извлечение заметок о выпуске\nиз CHANGELOG.md (awk)"]
-        extract --> ghrel["gh release create vX.Y.Z\n+ прикрепление JAR'ов\n+ заметки о выпуске"]
+        trigger --> matrix["Матричная сборка: JDK 17 + 25\n./gradlew check -Pversion=X.Y.Z"]
+        matrix --> testok{Все тесты прошли?}
+        testok -- Нет --> fail["Рабочий процесс завершается с ошибкой\nРелиз не создаётся"]
+        testok -- Да --> jars["Сбор JARов из сборки на JDK 17\n(плагин + фильтр + аннотации)"]
+        jars --> extract["Извлечение примечаний к релизу\nиз CHANGELOG.md (awk)"]
+        extract --> ghrel["gh release create vX.Y.Z\n+ приложить JARы\n+ примечания к релизу"]
     end
 
     ghrel --> done["GitHub Release опубликован"]
+    done --> snapshot["Повысить до следующей SNAPSHOT\nversion=0.3.0-SNAPSHOT"]
 
     style trigger fill:#e37400,color:#fff
     style ghrel fill:#181717,color:#fff
@@ -157,38 +157,40 @@ flowchart TD
 
 ### Пошаговые инструкции
 
-#### 1. Подготовить changelog
+#### 1. Подготовить Changelog
 
-Перенести все записи из `[Unreleased]` в новый раздел с датой:
+Перенесите все записи из `[Unreleased]` в новый датированный раздел версии. Оставьте `[Unreleased]` наверху — всегда пустым после релиза:
 
 ```markdown
 ## [Unreleased]
 
-## [0.2.0] — 2026-04-15
+## [0.2.0] — 2026-03-21
 
 ### Added
-- Quality gate: fail build if mutation score below threshold
-- GitHub Checks API reporter with inline PR annotations
-
-### Fixed
-- SARIF converter handles mutations with no source file gracefully
+- Post-processing pipeline: JSON, SARIF, quality gate, ratchet, GitHub Checks wired into `exec()` (Sprint 9)
+- `mutationScoreThreshold` property: fail build when mutation score drops below threshold
+- `jsonReport` property: first-class DSL control for mutation-testing-elements JSON (default: true)
+- `sarifReport` property: first-class DSL control for SARIF 2.1.0 output (default: false)
+- Per-package ratchet: `ratchetEnabled`, `ratchetBaseline`, `ratchetAutoUpdate` properties (Sprint 10)
+- `mutaktor-annotations` module: `@MutationCritical` and `@SuppressMutations` (Sprint 11)
+- GraalVM auto-detection: `GraalVmDetector` switches PIT child JVM to standard HotSpot when building under GraalVM + Quarkus (Sprint 12)
+- `javaLauncher` property: Gradle Toolchain API integration for PIT child JVM (Sprint 12)
+- Empty `targetClasses` guard: clear error message when no classes are configured (Sprint 9)
 
 [Unreleased]: https://github.com/dantte-lp/mutaktor/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/dantte-lp/mutaktor/compare/v0.1.0...v0.2.0
 ```
 
-Оставляйте `[Unreleased]` вверху — всегда пустым после релиза.
-
-#### 2. Обновить версию
+#### 2. Повысить версию
 
 ```properties
 # gradle.properties
 version=0.2.0
 ```
 
-Удалите суффикс `-SNAPSHOT`. Release-воркфлоу убирает префикс `v` из тега и передаёт его в Gradle через `-Pversion="${VERSION}"`.
+Уберите суффикс `-SNAPSHOT`. Рабочий процесс release удаляет префикс `v` из тега и передаёт версию в Gradle через `-Pversion="${VERSION}"`.
 
-#### 3. Сделать коммит и тег
+#### 3. Зафиксировать и поставить тег
 
 ```bash
 git add CHANGELOG.md gradle.properties
@@ -197,7 +199,7 @@ git tag v0.2.0
 git push origin main --tags
 ```
 
-Тег должен строго соответствовать паттерну `v*`. Триггер воркфлоу:
+Тег должен точно соответствовать шаблону `v*`. Триггер рабочего процесса:
 
 ```yaml
 on:
@@ -206,22 +208,22 @@ on:
       - "v*"
 ```
 
-#### 4. Проверить release-воркфлоу
+#### 4. Проверить рабочий процесс Release
 
-Перейдите в **Actions → Release** в GitHub-репозитории. Воркфлоу:
+Перейдите в **Actions → Release** в репозитории GitHub. Рабочий процесс:
 
 1. Запускает `./gradlew check -Pversion="0.2.0"` на JDK 17 и 25
-2. Загружает JAR'ы из сборки JDK 17 как артефакт воркфлоу
-3. Извлекает раздел `[0.2.0]` из `CHANGELOG.md` с помощью `awk`-скрипта
-4. Создаёт GitHub Release с именем `mutaktor v0.2.0` с извлечёнными заметками и прикреплёнными JAR'ами
+2. Загружает JARы из сборки на JDK 17 как артефакт рабочего процесса
+3. Извлекает раздел `[0.2.0]` из `CHANGELOG.md` с помощью скрипта `awk`
+4. Создаёт GitHub Release с именем `mutaktor v0.2.0` с прикреплёнными примечаниями и JARами
 
-Если `awk`-скрипт не находит соответствующего раздела, он откатывается к ссылке на `CHANGELOG.md`.
+Если скрипт `awk` не находит соответствующего раздела (например, запись в changelog отсутствует), он откатывается к ссылке на `CHANGELOG.md`.
 
 #### 5. После релиза: восстановить SNAPSHOT
 
-После завершения release-воркфлоу верните версию к следующему SNAPSHOT:
+После успешного завершения рабочего процесса release повысьте версию до следующей SNAPSHOT:
 
-```bash
+```properties
 # gradle.properties
 version=0.3.0-SNAPSHOT
 ```
@@ -234,12 +236,12 @@ git push origin main
 
 ---
 
-## Извлечение заметок о выпуске
+## Извлечение примечаний к релизу
 
-Release-воркфлоу извлекает соответствующий раздел changelog автоматически:
+Рабочий процесс release автоматически извлекает соответствующий раздел changelog с помощью `awk`:
 
 ```bash
-VERSION="${GITHUB_REF_NAME#v}"   # убирает ведущий 'v'
+VERSION="${GITHUB_REF_NAME#v}"   # удаляет ведущий 'v' из тега
 
 awk -v ver="$VERSION" '
   /^## / { if (found) exit; if ($0 ~ ver) { found=1; next } }
@@ -247,88 +249,85 @@ awk -v ver="$VERSION" '
 ' CHANGELOG.md > release-notes.md
 ```
 
-Скрипт выводит все строки между заголовком `## [X.Y.Z]` и следующим заголовком `## `. Вывод используется дословно как тело GitHub Release.
+Этот скрипт выводит все строки между заголовком `## [X.Y.Z]` и следующим заголовком `## `. Вывод используется дословно как тело GitHub Release.
 
-Пример — для тега `v0.2.0` и следующего changelog:
+Для тега `v0.2.0` и changelog вида:
 
 ```markdown
-## [0.2.0] — 2026-04-15
+## [0.2.0] — 2026-03-21
 
 ### Added
-- Quality gate
+- Post-processing pipeline
 
-## [0.1.0] — 2026-03-21
+## [0.1.0] — 2025-12-01
 ```
 
-Скрипт выдаёт:
+Скрипт производит:
 
 ```markdown
 
 ### Added
-- Quality gate
+- Post-processing pipeline
 
 ```
 
 ---
 
-## Лучшие практики ведения changelog
+## Лучшие практики changelog
 
-### Пишите записи как описания для пользователя
+### Пишите описания для пользователей
 
 ```markdown
 # Хорошо — объясняет, что получает пользователь
-- Git-diff scoped analysis: `mutaktor { since.set("main") }` — only mutates changed classes
+- Per-package mutation ratchet: `ratchetEnabled = true` prevents score regression on a per-package basis
 
-# Слишком внутреннее — описывает реализацию, а не эффект для пользователя
-- Added `GitDiffAnalyzer.changedClasses()` method
+# Слишком внутреннее — описывает реализацию, а не влияние на пользователя
+- Added MutationRatchet.computeScores() using DOM parsing of mutations.xml
 ```
 
-### Ссылайтесь на номера спринтов или issue для отслеживаемости
+### Ссылайтесь на номера спринтов или issues
 
 ```markdown
 ### Added
-- Extreme mutation mode: 6 method-body removal mutators, `extreme.set(true)` (Sprint 7)
-- GitHub Checks API reporter with inline PR annotations for survived mutants (Sprint 6, #42)
+- GraalVM auto-detect: switches PIT child JVM to standard HotSpot when building under GraalVM + Quarkus (Sprint 12)
+- `@MutationCritical` annotation: mark classes/methods that require 100% mutation score (#87)
 ```
 
-### Группируйте связанные записи
+### Группируйте связанные записи под правильными разделами
 
-Держите все изменения под правильным заголовком раздела внутри одного блока версии. Не добавляйте произвольный текст вне разделов.
+Каждое изменение должно быть помещено под соответствующий заголовок раздела (`Added`, `Changed`, `Fixed` и т.д.) в пределах одного блока версии. Не добавляйте произвольный текст за пределами заголовков разделов.
 
 ### Не редактируйте выпущенные разделы
 
-Как только версия помечена тегом и выпущена, её раздел changelog неизменен. Если в выпущенной записи содержится ошибка, добавьте корректирующую запись в следующую версию.
+Как только версия помечена тегом и выпущена, её раздел changelog неизменен. Если выпущенная запись содержит ошибку, добавьте запись с исправлением в следующей версии.
 
 ---
 
-## Текущие нереализованные записи
-
-Из `CHANGELOG.md` на момент написания этой документации:
+## Полный набор изменений v0.2.0
 
 | Раздел | Запись |
-|---------|-------|
-| Added | Quality gate: fail build if mutation score below threshold (Sprint 6) |
-| Added | Multi-module aggregation: `mutateAggregate` task (Sprint 8) |
-| Added | Release workflow: GitHub Actions with JDK 17+25 matrix (Sprint 8) |
-| Added | Extreme mutation mode: 6 method-body removal mutators (Sprint 7) |
-| Added | GitHub Checks API reporter with inline PR annotations (Sprint 6) |
-| Added | mutation-testing-elements JSON report converter (Sprint 5) |
-| Added | SARIF 2.1.0 report converter (Sprint 5) |
-| Added | Git-diff scoped analysis: `since` property (Sprint 4) |
-| Added | Type-safe Kotlin DSL with 24 managed properties (Sprint 2) |
-| Added | PIT execution via JavaExec (Sprint 2) |
-| Added | Kotlin junk mutation filter with 5 filter patterns (Sprint 3) |
-| Added | Project scaffold: Kotlin 2.3, Gradle 9.4.1, JDK 25 (Sprint 1) |
-| Added | GitHub Actions CI workflow with JDK 17/21/25 matrix (Sprint 1) |
-
-Все записи переедут в `[0.1.0]`, когда будет отправлен первый тег релиза.
+|--------|--------|
+| Added | Post-processing pipeline: JSON + SARIF + quality gate + ratchet + GitHub Checks wired into `exec()` |
+| Added | Свойство `mutationScoreThreshold` (0–100): завершать сборку с ошибкой, если оценка мутаций ниже порога |
+| Added | Свойство `jsonReport`: первоклассное управление DSL для JSON mutation-testing-elements (по умолчанию: `true`) |
+| Added | Свойство `sarifReport`: первоклассное управление DSL для SARIF 2.1.0 (по умолчанию: `false`) |
+| Added | Покомпонентный ratchet: свойства `ratchetEnabled`, `ratchetBaseline`, `ratchetAutoUpdate` |
+| Added | Модуль `mutaktor-annotations`: исходные аннотации `@MutationCritical` и `@SuppressMutations` |
+| Added | `GraalVmDetector`: авто-выбор стандартного JDK при сборке с GraalVM + Quarkus |
+| Added | Свойство `javaLauncher`: полная интеграция с Gradle Toolchain API для дочернего JVM PIT |
+| Added | Защита от пустого `targetClasses`: `GradleException` с понятным сообщением при отсутствии настроенных классов |
+| Added | `util/XmlParser.kt`: общий безопасный разбор XML (защита от XXE во всех конвертерах) |
+| Added | `util/JsonBuilder.kt`: общее построение JSON без зависимостей |
+| Added | `util/SourcePathResolver.kt`: общее разрешение пути файла → FQN (исправляет хардкод `src/main/java/`) |
+| Fixed | Конвертеры отчётов хардкодили `src/main/java/` — теперь используется `SourcePathResolver` со всеми корнями исходников |
+| Fixed | `MutationRatchet` считает `TIMED_OUT` и `MEMORY_ERROR` как уничтоженные (не только `KILLED`) |
 
 ---
 
 ## См. также
 
-- [07-ci-cd.md](07-ci-cd.md) — Детали реализации release-воркфлоу
+- [Интеграция с CI/CD](./07-ci-cd.md) — Детали реализации рабочего процесса release
 - `CHANGELOG.md` — Фактический changelog
-- `gradle.properties` — Текущее объявление версии
+- `gradle.properties` — Объявление текущей версии
 - [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
 - [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)

@@ -6,14 +6,18 @@ sidebar_label: Конфигурация
 
 # Справочник по конфигурационному DSL
 
-![Gradle](https://img.shields.io/badge/Gradle-9.4.1-02303A?logo=gradle&logoColor=white)
-![Kotlin DSL](https://img.shields.io/badge/DSL-Kotlin-7F52FF?logo=kotlin&logoColor=white)
-![Config Cache](https://img.shields.io/badge/Configuration%20Cache-совместим-brightgreen)
-![Lang](https://img.shields.io/badge/Lang-Русский-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-7F52FF?style=for-the-badge)
+![Gradle DSL](https://img.shields.io/badge/Kotlin_DSL-supported-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
+![Groovy DSL](https://img.shields.io/badge/Groovy_DSL-supported-4298B8?style=for-the-badge)
+![Config Cache](https://img.shields.io/badge/Configuration_Cache-compatible-brightgreen?style=for-the-badge)
+![Properties](https://img.shields.io/badge/properties-32-blue?style=for-the-badge)
+![Lang-Русский](https://img.shields.io/badge/Lang-Русский-blue?style=for-the-badge)
 
 ## Обзор
 
-Все параметры плагина объявляются в блоке расширения `mutaktor`. Каждое свойство поддерживается Provider API Gradle, что означает ленивое разрешение значений во время выполнения задачи, а не во время конфигурации. Это обеспечивает полную совместимость плагина с кэшем конфигурации Gradle и режимом изолированных проектов.
+Все параметры плагина объявляются в блоке расширения `mutaktor` внутри `build.gradle.kts` (или `build.gradle`). Каждое свойство поддерживается Provider API Gradle, что означает ленивое вычисление значений во время выполнения задачи, а не во время конфигурирования. Это делает плагин полностью совместимым с configuration cache Gradle и режимом изолированных проектов.
+
+---
 
 ## Быстрый старт
 
@@ -22,15 +26,17 @@ sidebar_label: Конфигурация
 ```kotlin
 // build.gradle.kts
 plugins {
-    id("io.github.dantte-lp.mutaktor") version "x.y.z"
+    kotlin("jvm") version "2.3.0"
+    id("io.github.dantte-lp.mutaktor") version "0.2.0"
 }
 
 mutaktor {
     targetClasses = setOf("com.example.*")
-    threads = Runtime.getRuntime().availableProcessors()
-    since = "main"
-    kotlinFilters = true
-    outputFormats = setOf("HTML", "XML")
+    mutationScoreThreshold = 80          // завершить сборку ниже 80%
+    since = "main"                       // анализ в рамках git-diff
+    kotlinFilters = true                 // фильтрация шума компилятора Kotlin
+    jsonReport = true                    // JSON mutation-testing-elements
+    sarifReport = true                   // SARIF для GitHub Code Scanning
 }
 ```
 
@@ -39,42 +45,49 @@ mutaktor {
 ```groovy
 // build.gradle
 plugins {
-    id 'io.github.dantte-lp.mutaktor' version 'x.y.z'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
+    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
 }
 
 mutaktor {
     targetClasses = ['com.example.*'] as Set
-    threads = Runtime.runtime.availableProcessors()
+    mutationScoreThreshold = 80
     since = 'main'
     kotlinFilters = true
-    outputFormats = ['HTML', 'XML'] as Set
+    jsonReport = true
+    sarifReport = true
 }
 ```
+
+---
 
 ## Справочник свойств
 
 ### Основные
 
-Эти свойства управляют тем, какие классы мутируются, сколько мутантов генерируется и какая версия PIT используется.
+Управляют тем, какие классы мутируются, сколько потоков используется и какая версия PIT разрешается.
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
+|----------|-----|--------------|----------|
 | `pitVersion` | `Property<String>` | `"1.23.0"` | Версия PIT, разрешаемая из Maven Central |
-| `targetClasses` | `SetProperty<String>` | `setOf("$group.*")` | Glob-паттерны, определяющие классы для мутирования |
-| `targetTests` | `SetProperty<String>` | _(автоопределение PIT)_ | Glob-паттерны, определяющие тестовые классы для запуска |
+| `targetClasses` | `SetProperty<String>` | `setOf("$group.*")` | Glob-шаблоны для выбора классов для мутации; **обязательно** |
+| `targetTests` | `SetProperty<String>` | _(автоопределение PIT)_ | Glob-шаблоны для выбора тестовых классов для запуска |
 | `threads` | `Property<Int>` | `availableProcessors()` | Количество параллельных потоков анализа мутаций |
 | `mutators` | `SetProperty<String>` | `setOf("DEFAULTS")` | Группы мутаторов или имена отдельных мутаторов |
-| `timeoutFactor` | `Property<BigDecimal>` | `1.25` | Множитель, применяемый к нормальному времени выполнения тестов для вычисления таймаута каждого мутанта |
-| `timeoutConstant` | `Property<Int>` | `4000` | Константа (мс), добавляемая к вычисленному таймауту для каждого мутанта |
+| `timeoutFactor` | `Property<BigDecimal>` | `1.25` | Множитель, применяемый к нормальному времени выполнения тестов для таймаута мутанта |
+| `timeoutConstant` | `Property<Int>` | `4000` | Постоянные миллисекунды, добавляемые к вычисленному таймауту мутанта |
+
+> **Предупреждение:** `targetClasses` должно быть непустым. Если ни `targetClasses`, ни `project.group` не заданы, задача `mutate` немедленно выбросит `GradleException` при выполнении:
+> ```
+> Mutaktor: targetClasses is empty. Set mutaktor.targetClasses or project.group.
+> ```
 
 #### Группы мутаторов
 
-PIT поставляется с предопределёнными группами мутаторов. Можно использовать любую комбинацию групп и имён отдельных мутаторов.
-
 | Группа | Описание |
-|---|---|
-| `DEFAULTS` | Стандартные операторы мутации — базовый набор для большинства проектов |
-| `STRONGER` | Более агрессивные операторы, генерируют больше мутантов, могут увеличить время анализа |
+|--------|----------|
+| `DEFAULTS` | Стандартные операторы мутации — базовый вариант для большинства проектов |
+| `STRONGER` | Более агрессивные операторы; производит больше мутантов, может увеличить время анализа |
 | `ALL` | Все доступные мутаторы; используйте только на небольших кодовых базах |
 
 Отдельные мутаторы можно смешивать с группами:
@@ -85,48 +98,27 @@ mutaktor {
 }
 ```
 
-#### Kotlin DSL — пример (основные свойства)
-
-```kotlin
-mutaktor {
-    pitVersion = "1.23.0"
-    targetClasses = setOf("com.example.service.*", "com.example.domain.*")
-    targetTests = setOf("com.example.*Test", "com.example.*Spec")
-    threads = 4
-    mutators = setOf("DEFAULTS")
-    timeoutFactor = java.math.BigDecimal("1.50")
-    timeoutConstant = 5000
-}
-```
-
-#### Groovy DSL — пример (основные свойства)
-
 ```groovy
 mutaktor {
-    pitVersion = '1.23.0'
-    targetClasses = ['com.example.service.*', 'com.example.domain.*'] as Set
-    targetTests = ['com.example.*Test', 'com.example.*Spec'] as Set
-    threads = 4
-    mutators = ['DEFAULTS'] as Set
-    timeoutFactor = 1.50
-    timeoutConstant = 5000
+    mutators = ['DEFAULTS', 'UOI', 'AOR'] as Set
 }
 ```
+
+---
 
 ### Фильтрация
 
-Используйте свойства фильтрации для исключения генерируемого кода, шаблонного кода фреймворков и инфраструктурных классов, которые не являются значимыми целями для мутационного тестирования.
+Исключает сгенерированный код, шаблонный код фреймворков и инфраструктурные классы, которые не являются значимыми целями для мутационного тестирования.
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `excludedClasses` | `SetProperty<String>` | _(пусто)_ | Glob-паттерны для классов, исключённых из мутирования |
-| `excludedMethods` | `SetProperty<String>` | _(пусто)_ | Паттерны имён методов, исключённых из мутирования; поддерживает простые маски |
-| `excludedTestClasses` | `SetProperty<String>` | _(пусто)_ | Glob-паттерны для тестовых классов, исключённых из выполнения тестов |
-| `avoidCallsTo` | `SetProperty<String>` | _(пусто)_ | Полные префиксы пакетов, вызовы методов которых заменяются NO-OP во время анализа (например, логирование) |
-
-#### Kotlin DSL — пример (фильтрация)
+|----------|-----|--------------|----------|
+| `excludedClasses` | `SetProperty<String>` | _(пусто)_ | Glob-шаблоны для классов, исключённых из мутации |
+| `excludedMethods` | `SetProperty<String>` | _(пусто)_ | Шаблоны имён методов, исключённых из мутации; поддерживаются простые wildcards |
+| `excludedTestClasses` | `SetProperty<String>` | _(пусто)_ | Glob-шаблоны для тестовых классов, исключённых из выполнения тестов |
+| `avoidCallsTo` | `SetProperty<String>` | _(пусто)_ | FQN-префиксы пакетов, вызовы методов которых заменяются на NO-OP (например, логирование) |
 
 ```kotlin
+// Kotlin DSL
 mutaktor {
     excludedClasses = setOf(
         "com.example.generated.*",
@@ -142,9 +134,8 @@ mutaktor {
 }
 ```
 
-#### Groovy DSL — пример (фильтрация)
-
 ```groovy
+// Groovy DSL
 mutaktor {
     excludedClasses = ['com.example.generated.*', 'com.example.config.*'] as Set
     excludedMethods = ['toString', 'hashCode', 'equals'] as Set
@@ -152,44 +143,68 @@ mutaktor {
 }
 ```
 
+---
+
 ### Отчётность
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `reportDir` | `DirectoryProperty` | `build/reports/mutaktor` | Директория, в которую PIT записывает вывод |
-| `outputFormats` | `SetProperty<String>` | `setOf("HTML", "XML")` | Генерируемые форматы вывода; см. таблицу ниже |
-| `timestampedReports` | `Property<Boolean>` | `false` | При значении `true` PIT создаёт субдиректорию с временной меткой для каждого запуска, а не перезаписывает результаты |
+|----------|-----|--------------|----------|
+| `reportDir` | `DirectoryProperty` | `build/reports/mutaktor` | Директория, в которую PIT записывает результаты |
+| `outputFormats` | `SetProperty<String>` | `setOf("HTML", "XML")` | Форматы вывода PIT для генерации; `XML` обязателен для постобработки |
+| `timestampedReports` | `Property<Boolean>` | `false` | Если `true`, PIT создаёт поддиректорию с временной меткой для каждого запуска |
+| `jsonReport` | `Property<Boolean>` | `true` | Если `true`, создаёт `mutations.json` (схема mutation-testing-elements v2) |
+| `sarifReport` | `Property<Boolean>` | `false` | Если `true`, создаёт `mutations.sarif.json` (SARIF 2.1.0) |
+| `mutationScoreThreshold` | `Property<Int>` | _(не задано)_ | Минимально допустимая оценка мутаций (0–100); сборка завершается с ошибкой, если оценка ниже этого значения |
 
-#### Форматы вывода
+> **Примечание:** `jsonReport` по умолчанию `true` в v0.2.0 — файл JSON mutation-testing-elements автоматически генерируется после каждого успешного запуска PIT, если явно не задать `jsonReport = false`.
+
+> **Примечание:** `sarifReport = false` по умолчанию, чтобы не генерировать SARIF-файлы в каждой локальной сборке разработчика. Включайте в CI, где загружаете в GitHub Code Scanning.
+
+#### Форматы вывода (родные форматы PIT)
 
 | Значение | Описание |
-|---|---|
-| `HTML` | Интерактивный HTML-отчёт с подсветкой мутаций на уровне строк кода — стандартный отчёт PIT |
-| `XML` | Машиночитаемый отчёт `mutations.xml`; обязателен для конвертации в SARIF и Stryker Dashboard |
-| `CSV` | Сводный файл в формате TSV |
+|----------|----------|
+| `HTML` | Интерактивный HTML-отчёт с подсветкой мутаций на уровне строк |
+| `XML` | Машиночитаемый отчёт `mutations.xml`; **обязателен** для `jsonReport` и `sarifReport` |
+| `CSV` | Сводный файл с разделителями-табуляциями |
 
-#### Kotlin DSL — пример (отчётность)
+#### mutationScoreThreshold
 
 ```kotlin
+// Kotlin DSL
 mutaktor {
-    reportDir = layout.buildDirectory.dir("reports/mutation")
-    outputFormats = setOf("HTML", "XML")
-    timestampedReports = false
+    mutationScoreThreshold = 80   // завершить сборку, если оценка < 80%
 }
 ```
+
+```groovy
+// Groovy DSL
+mutaktor {
+    mutationScoreThreshold = 80
+}
+```
+
+Когда `mutationScoreThreshold` задан, `MutaktorTask` вызывает `QualityGate.evaluate()` после завершения PIT и выбрасывает `GradleException`, если оценка ниже порога:
+
+```
+Mutaktor: quality gate FAILED — mutation score 72% is below threshold 80%
+```
+
+Если `totalMutations == 0` (ничего не мутировалось, например, все изменённые классы были исключены), оценка считается равной `100` и проверка проходит.
+
+---
 
 ### Конфигурация тестов
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `junit5PluginVersion` | `Property<String>` | `"1.2.3"` | Версия `org.pitest:pitest-junit5-plugin`, разрешаемая из Maven Central |
+|----------|-----|--------------|----------|
+| `junit5PluginVersion` | `Property<String>` | `"1.2.3"` | Версия `org.pitest:pitest-junit5-plugin` |
 | `includedGroups` | `SetProperty<String>` | _(пусто)_ | Выражения тегов JUnit 5 для включаемых тестов |
 | `excludedGroups` | `SetProperty<String>` | _(пусто)_ | Выражения тегов JUnit 5 для исключаемых тестов |
-| `fullMutationMatrix` | `Property<Boolean>` | `false` | При значении `true` каждый мутант проверяется всеми тестами без досрочного выхода; значительно увеличивает время выполнения |
-
-#### Kotlin DSL — пример (конфигурация тестов)
+| `fullMutationMatrix` | `Property<Boolean>` | `false` | Если `true`, каждый мутант тестируется против каждого теста без раннего выхода |
 
 ```kotlin
+// Kotlin DSL
 mutaktor {
     junit5PluginVersion = "1.2.3"
     includedGroups = setOf("unit", "integration")
@@ -198,20 +213,23 @@ mutaktor {
 }
 ```
 
+> **Предупреждение:** `fullMutationMatrix = true` значительно увеличивает время выполнения. Используйте только когда нужно точно определить, какие тесты уничтожают каких мутантов в целях анализа покрытия.
+
+---
+
 ### Расширенные настройки / JVM
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `jvmArgs` | `ListProperty<String>` | _(пусто)_ | Дополнительные JVM-аргументы, передаваемые в **дочерние** форкнутые тестовые процессы (например, `--add-opens`, `-Xmx`) |
-| `mainProcessJvmArgs` | `ListProperty<String>` | _(пусто)_ | Дополнительные JVM-аргументы, передаваемые в **основной** процесс анализа PIT (не в дочерние воркеры) |
-| `pluginConfiguration` | `MapProperty<String, String>` | _(пусто)_ | Пары ключ-значение, передаваемые в плагины PIT через `--pluginConfiguration`; ключи следуют шаблону `pluginName.key` |
-| `features` | `ListProperty<String>` | _(пусто)_ | Флаги функций PIT для включения (`+flagName`) или отключения (`-flagName`) |
-| `verbose` | `Property<Boolean>` | `false` | Включить подробный вывод PIT в консоль; полезно для отладки проблем с classpath или конфигурацией |
-| `useClasspathFile` | `Property<Boolean>` | `true` | При значении `true` записывает classpath в `build/mutaktor/pitClasspath` и передаёт его через `--classPathFile`, избегая ограничений длины аргументов ОС |
-
-#### Kotlin DSL — расширенный пример
+|----------|-----|--------------|----------|
+| `jvmArgs` | `ListProperty<String>` | _(пусто)_ | Дополнительные аргументы JVM, передаваемые в **разветвлённые** дочерние тестовые процессы |
+| `mainProcessJvmArgs` | `ListProperty<String>` | _(пусто)_ | Дополнительные аргументы JVM, передаваемые в **главный** процесс анализа PIT |
+| `pluginConfiguration` | `MapProperty<String, String>` | _(пусто)_ | Пары ключ-значение, перенаправляемые в плагины PIT через `--pluginConfiguration` |
+| `features` | `ListProperty<String>` | _(пусто)_ | Флаги фичей PIT для включения (`+flagName`) или отключения (`-flagName`) |
+| `verbose` | `Property<Boolean>` | `false` | Включить подробный вывод PIT в консоль |
+| `useClasspathFile` | `Property<Boolean>` | `true` | Записать classpath в `build/mutaktor/pitClasspath` и передать через `--classPathFile` |
 
 ```kotlin
+// Kotlin DSL
 mutaktor {
     jvmArgs = listOf(
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
@@ -226,76 +244,201 @@ mutaktor {
 }
 ```
 
-### Git-aware-анализ
-
-| Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `since` | `Property<String>` | _(не задано)_ | Git-реф для сравнения (имя ветки, тег или SHA коммита). Если задано, мутируются только классы, изменившиеся с этого рефа. |
-
-Если `since` задан, но `git diff` не возвращает изменённых исходных файлов, плагин откатывается к настроенному `targetClasses` и записывает сообщение в лог жизненного цикла.
-
-```kotlin
+```groovy
+// Groovy DSL
 mutaktor {
-    // Мутировать только классы, изменившиеся с ветки main
-    since = "main"
-
-    // Или ограничиться последними 5 коммитами
-    // since = "HEAD~5"
-
-    // Или конкретным SHA коммита
-    // since = "a1b2c3d"
+    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED', '-Xmx2g']
+    features = ['+auto_threads', '-FLOGIC']
+    pluginConfiguration = ['ARCMUTATE_ENGINE.limit': '100']
 }
 ```
 
-Подробности см. в разделе [Анализ в рамках git-диффа](./04-git-integration.md).
+---
+
+### javaLauncher
+
+Свойство `javaLauncher` управляет тем, какой JDK используется для дочернего процесса PIT (JVM minion, запускающий тесты под мутацией). Это отдельно от JVM сборки Gradle.
+
+| Свойство | Тип | По умолчанию | Описание |
+|----------|-----|--------------|----------|
+| `javaLauncher` | `Property<JavaLauncher>` | _(JDK сборки)_ | Java launcher для дочернего процесса PIT через Gradle Toolchain API |
+
+#### Когда использовать javaLauncher
+
+Наиболее важный сценарий — сборка с GraalVM. GraalVM использует схемы URL `jrt://` в своём classpath, что приводит к сбоям JVM minion PIT. Задайте `javaLauncher` для стандартного HotSpot JDK:
+
+```kotlin
+// Kotlin DSL — явный выбор toolchain
+mutaktor {
+    javaLauncher.set(
+        javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(21))
+            vendor.set(JvmVendorSpec.AZUL)
+        }
+    )
+}
+```
+
+```groovy
+// Groovy DSL
+mutaktor {
+    javaLauncher.set(
+        javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(21)
+            vendor = JvmVendorSpec.AZUL
+        }
+    )
+}
+```
+
+#### Автоопределение GraalVM
+
+Когда `javaLauncher` **не** задан явно, `MutaktorPlugin` автоматически проверяет, является ли текущий JDK сборки GraalVM и использует ли проект Quarkus. Если оба условия выполнены, `GraalVmDetector` пытается разрешить стандартный JDK через `JavaToolchainService` (последовательно пробуя поставщиков Azul, Adoptium и Amazon):
+
+```mermaid
+flowchart TD
+    A["javaLauncher задан?"] -- Да --> B["Использовать настроенный launcher"]
+    A -- Нет --> C["GraalVmDetector.isGraalVm()?"]
+    C -- Нет --> D["Использовать JDK сборки как есть"]
+    C -- Да --> E["GraalVmDetector.hasQuarkus(project)?"]
+    E -- Нет --> D
+    E -- Да --> F["resolveStandardJdk(toolchains)"]
+    F -- найден --> G["task.javaLauncher.set(standardJdk)\nлог: авто-выбран стандартный JDK"]
+    F -- не найден --> H["logger.warn: стандартный JDK не найден\nPIT может завершиться с ошибкой"]
+```
+
+> **Совет:** Чтобы автоопределение GraalVM могло скачивать JDK по требованию, добавьте резолвер toolchain foojay в `settings.gradle.kts`:
+> ```kotlin
+> plugins {
+>     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+> }
+> ```
+
+---
+
+### Анализ с учётом git
+
+| Свойство | Тип | По умолчанию | Описание |
+|----------|-----|--------------|----------|
+| `since` | `Property<String>` | _(не задано)_ | Git-ссылка для сравнения. Если задана, мутируются только классы, изменённые с этой ссылки. |
+
+Свойство `since` принимает любую git-ссылку:
+
+| Значение | Значение |
+|----------|----------|
+| `"main"` | Все коммиты в текущей ветке, ещё не слитые в `main` |
+| `"develop"` | Все коммиты, ещё не слитые в `develop` |
+| `"HEAD~5"` | Последние 5 коммитов в текущей ветке |
+| `"v1.2.3"` | Все коммиты с момента тега `v1.2.3` |
+| `"a1b2c3d"` | Все коммиты с конкретного SHA коммита |
+
+```kotlin
+// Kotlin DSL — чтение из переменной окружения CI
+mutaktor {
+    since = providers.environmentVariable("MUTATION_SINCE").orNull
+    targetClasses = setOf("com.example.*")  // fallback, когда since не задан
+}
+```
+
+Подробности см. в [Анализ в рамках git-diff](./04-git-integration.md).
+
+---
 
 ### Фильтр мусорных мутаций Kotlin
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `kotlinFilters` | `Property<Boolean>` | `true` | Включить встроенный `KotlinJunkFilter`, подавляющий мутации в байткоде, генерируемом компилятором Kotlin |
+|----------|-----|--------------|----------|
+| `kotlinFilters` | `Property<Boolean>` | `true` | Включить `KotlinJunkFilter`, подавляющий мутации в байткоде, генерируемом компилятором Kotlin |
 
-При включении JAR `mutaktor-pitest-filter` добавляется в classpath PIT. В многомодульной сборке, включающей подпроект `:mutaktor-pitest-filter`, используется локальная зависимость проекта. В автономной сборке JAR должен быть доступен как опубликованный артефакт.
+Когда включён, JAR `mutaktor-pitest-filter` добавляется в classpath PIT. Фильтр охватывает 5 шаблонов: null-check intrinsics, методы, генерируемые data-классами, конечные автоматы сопрограмм, бриджевые классы `$DefaultImpls` и диспетчеризацию хеш-кода выражений `when`.
 
 ```kotlin
 mutaktor {
-    kotlinFilters = true  // по умолчанию; подавляет шум от data-class, coroutine, null-check
+    kotlinFilters = true   // по умолчанию; подавить шум data-класса, сопрограмм и null-check
 }
 ```
 
-Описание всех 5 паттернов фильтрации см. в разделе [Фильтр мусорных мутаций Kotlin](./03-kotlin-filters.md).
+Подробнее см. [Фильтр мусорных мутаций Kotlin](./03-kotlin-filters.md).
 
-### Режим экстремальных мутаций
+---
+
+### Экстремальный режим мутаций
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `extreme` | `Property<Boolean>` | `false` | Заменить точечные мутаторы операторами удаления тела метода. Генерирует ~1 мутант на метод вместо ~10, что делает анализ практичным для больших кодовых баз. |
+|----------|-----|--------------|----------|
+| `extreme` | `Property<Boolean>` | `false` | Заменить детализированные мутаторы операторами удаления тела метода (~1 мутант на метод вместо ~10) |
 
-При `extreme = true` свойство `mutators` переопределяется 6 операторами удаления тела метода независимо от того, что настроено:
+Когда `extreme = true`, свойство `mutators` переопределяется следующими 6 операторами удаления тела метода:
 
 | Мутатор | Эффект |
-|---|---|
+|---------|--------|
 | `VOID_METHOD_CALLS` | Удаляет вызовы void-методов |
-| `EMPTY_RETURNS` | Заменяет возвраты объектов пустыми/дефолтными значениями |
-| `FALSE_RETURNS` | Заменяет возвраты boolean значением `false` |
-| `TRUE_RETURNS` | Заменяет возвраты boolean значением `true` |
-| `NULL_RETURNS` | Заменяет возвраты объектов значением `null` |
-| `PRIMITIVE_RETURNS` | Заменяет возвраты примитивов значением `0` |
+| `EMPTY_RETURNS` | Заменяет возврат объектов пустыми/значениями по умолчанию |
+| `FALSE_RETURNS` | Заменяет возврат булевых значений на `false` |
+| `TRUE_RETURNS` | Заменяет возврат булевых значений на `true` |
+| `NULL_RETURNS` | Заменяет возврат объектов на `null` |
+| `PRIMITIVE_RETURNS` | Заменяет возврат примитивов на `0` |
 
 ```kotlin
 mutaktor {
-    extreme = true  // переопределяет mutators; игнорирует любую конфигурацию mutators = setOf(...)
+    extreme = true   // переопределяет mutators; любой mutators = setOf(...) игнорируется
 }
 ```
+
+> **Совет:** Экстремальный режим практичен для крупных кодовых баз, где полное мутационное тестирование заняло бы часы. Он обнаруживает псевдо-тестируемые методы — методы, которые вызываются тестами, но чья логика никогда не проверяется фактически.
+
+---
+
+### Покомпонентный ratchet
+
+Ratchet предотвращает регрессию оценки мутаций. При каждом запуске покомпонентные оценки сравниваются с сохранённой базовой оценкой. Если любой пакет опускается ниже своей базовой оценки, сборка завершается с ошибкой.
+
+| Свойство | Тип | По умолчанию | Описание |
+|----------|-----|--------------|----------|
+| `ratchetEnabled` | `Property<Boolean>` | `false` | Включить покомпонентный ratchet оценки мутаций |
+| `ratchetBaseline` | `RegularFileProperty` | `.mutaktor-baseline.json` | Файл базовой оценки для сравнения |
+| `ratchetAutoUpdate` | `Property<Boolean>` | `true` | Автоматически обновлять базовую оценку при улучшении оценок |
+
+```kotlin
+// Kotlin DSL
+mutaktor {
+    ratchetEnabled = true
+    ratchetBaseline = layout.projectDirectory.file(".mutaktor-baseline.json")
+    ratchetAutoUpdate = true   // автоматически обновлять при улучшении оценок
+}
+```
+
+```groovy
+// Groovy DSL
+mutaktor {
+    ratchetEnabled = true
+    ratchetAutoUpdate = true
+}
+```
+
+При обнаружении регрессии:
+
+```
+Mutaktor: ratchet FAILED — mutation score regression detected:
+  com.example.service: 85% → 72%
+  com.example.domain: 90% → 87%
+```
+
+> **Совет:** Зафиксируйте `.mutaktor-baseline.json` в репозитории. Когда `ratchetAutoUpdate = true`, файл базовой оценки автоматически обновляется при улучшении любого пакета, поэтому только регрессии приводят к ошибке сборки.
+
+Подробности реализации см. в [Форматы отчётов и Quality Gate](./05-reporting.md#per-package-ratchet).
+
+---
 
 ### Инкрементальный анализ
 
 | Свойство | Тип | По умолчанию | Описание |
-|---|---|---|---|
-| `historyInputLocation` | `RegularFileProperty` | _(не задано)_ | Файл, из которого читается предыдущее состояние анализа мутаций; включает инкрементальный анализ |
-| `historyOutputLocation` | `RegularFileProperty` | _(не задано)_ | Файл, в который записывается состояние анализа мутаций после запуска |
+|----------|-----|--------------|----------|
+| `historyInputLocation` | `RegularFileProperty` | _(не задано)_ | Файл для чтения предыдущего состояния анализа мутаций |
+| `historyOutputLocation` | `RegularFileProperty` | _(не задано)_ | Файл для записи состояния анализа мутаций после запуска |
 
 ```kotlin
+// Kotlin DSL
 mutaktor {
     val historyFile = layout.projectDirectory.file(".mutation-history")
     historyInputLocation = historyFile
@@ -303,15 +446,84 @@ mutaktor {
 }
 ```
 
+PIT повторно использует предыдущие результаты для мутантов, чей окружающий код не изменился, что значительно сокращает время выполнения при повторных сборках. Подробности о сохранении файла истории между запусками GitHub Actions см. в [CI/CD: Кэширование и инкрементальный анализ](./07-ci-cd.md#caching-and-incremental-analysis).
+
+---
+
+## Модуль аннотаций
+
+Модуль `mutaktor-annotations` предоставляет аннотации уровня исходного кода для детального управления мутационным тестированием. JAR не имеет зависимостей и может быть добавлен в любой модуль без включения Gradle API.
+
+### Добавление зависимости
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("io.github.dantte-lp.mutaktor:mutaktor-annotations:0.2.0")
+}
+```
+
+```groovy
+// build.gradle
+dependencies {
+    implementation 'io.github.dantte-lp.mutaktor:mutaktor-annotations:0.2.0'
+}
+```
+
+### @MutationCritical
+
+Помечает код, который должен достичь 100% оценки мутаций. Сборка завершается с ошибкой, если любой мутант выживает в аннотированном коде.
+
+```kotlin
+import io.github.dantte_lp.mutaktor.annotations.MutationCritical
+
+@MutationCritical(reason = "Core authentication logic — all mutations must be killed")
+class AuthService {
+    fun authenticate(token: String): Boolean {
+        // Каждая мутация здесь должна быть обнаружена тестами
+    }
+}
+
+@MutationCritical
+fun computeHash(input: String): String {
+    // Аннотация на уровне метода
+}
+```
+
+### @SuppressMutations
+
+Полностью исключает класс или метод из анализа мутаций. Используйте экономно и всегда документируйте причину.
+
+```kotlin
+import io.github.dantte_lp.mutaktor.annotations.SuppressMutations
+
+@SuppressMutations(reason = "Adapter for legacy API — logic is integration-tested externally")
+class LegacyApiAdapter {
+    // Не мутируется
+}
+
+@SuppressMutations(reason = "Formatting only — no business logic")
+fun formatDisplayName(first: String, last: String): String = "$last, $first"
+```
+
+| Аннотация | Цель | `reason` | Эффект |
+|-----------|------|----------|--------|
+| `@MutationCritical` | CLASS, FUNCTION, CONSTRUCTOR | необязательно | Сборка завершается с ошибкой, если любой мутант выживает |
+| `@SuppressMutations` | CLASS, FUNCTION, CONSTRUCTOR | обязательно | Код исключается из анализа |
+
+> **Предупреждение:** `@SuppressMutations` требует параметр `reason` по замыслу. Это намеренный выбор API, препятствующий случайному подавлению — каждое подавление должно быть обосновано и видно при code review.
+
+---
+
 ## Полный пример конфигурации
 
-### Kotlin DSL
+### Kotlin DSL — Полный
 
 ```kotlin
 // build.gradle.kts
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("io.github.dantte-lp.mutaktor") version "x.y.z"
+    id("io.github.dantte-lp.mutaktor") version "0.2.0"
 }
 
 mutaktor {
@@ -331,20 +543,30 @@ mutaktor {
     // Отчётность
     outputFormats = setOf("HTML", "XML")
     timestampedReports = false
+    jsonReport = true
+    sarifReport = true
+    mutationScoreThreshold = 80
 
     // Тесты
     junit5PluginVersion = "1.2.3"
+    includedGroups = setOf("unit")
+    excludedGroups = setOf("slow", "e2e")
 
     // Расширенные
     jvmArgs = listOf("-Xmx2g")
     useClasspathFile = true
     verbose = false
 
-    // Git-aware анализ
+    // Анализ с учётом git
     since = providers.environmentVariable("MUTATION_SINCE").orNull
 
-    // Kotlin-фильтр
+    // Фильтр Kotlin
     kotlinFilters = true
+
+    // Ratchet
+    ratchetEnabled = true
+    ratchetBaseline = layout.projectDirectory.file(".mutaktor-baseline.json")
+    ratchetAutoUpdate = true
 
     // Инкрементальный
     val historyFile = layout.projectDirectory.file(".mutation-history")
@@ -353,13 +575,13 @@ mutaktor {
 }
 ```
 
-### Groovy DSL
+### Groovy DSL — Полный
 
 ```groovy
 // build.gradle
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.3.0'
-    id 'io.github.dantte-lp.mutaktor' version 'x.y.z'
+    id 'io.github.dantte-lp.mutaktor' version '0.2.0'
 }
 
 mutaktor {
@@ -376,25 +598,33 @@ mutaktor {
 
     outputFormats = ['HTML', 'XML'] as Set
     timestampedReports = false
+    jsonReport = true
+    sarifReport = true
+    mutationScoreThreshold = 80
 
     junit5PluginVersion = '1.2.3'
 
-    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED', '-Xmx2g']
+    jvmArgs = ['-Xmx2g']
     useClasspathFile = true
     verbose = false
 
     since = System.getenv('MUTATION_SINCE')
     kotlinFilters = true
+
+    ratchetEnabled = true
+    ratchetAutoUpdate = true
 }
 ```
 
-## Таблица значений по умолчанию
+---
+
+## Полная таблица значений по умолчанию
 
 | Свойство | Значение по умолчанию |
-|---|---|
+|----------|----------------------|
 | `pitVersion` | `"1.23.0"` |
 | `targetClasses` | `setOf("$project.group.*")` |
-| `targetTests` | _(автоопределение PIT по targetClasses)_ |
+| `targetTests` | Автоопределение PIT из `targetClasses` |
 | `threads` | `Runtime.getRuntime().availableProcessors()` |
 | `mutators` | `setOf("DEFAULTS")` |
 | `timeoutFactor` | `BigDecimal("1.25")` |
@@ -406,6 +636,9 @@ mutaktor {
 | `reportDir` | `build/reports/mutaktor` |
 | `outputFormats` | `setOf("HTML", "XML")` |
 | `timestampedReports` | `false` |
+| `jsonReport` | `true` |
+| `sarifReport` | `false` |
+| `mutationScoreThreshold` | _(не задано — проверка отключена)_ |
 | `junit5PluginVersion` | `"1.2.3"` |
 | `includedGroups` | _(пусто)_ |
 | `excludedGroups` | _(пусто)_ |
@@ -415,16 +648,22 @@ mutaktor {
 | `pluginConfiguration` | _(пусто)_ |
 | `features` | _(пусто)_ |
 | `verbose` | `false` |
+| `useClasspathFile` | `true` |
+| `javaLauncher` | _(JDK сборки или авто-выбранный для GraalVM)_ |
 | `since` | _(не задано)_ |
 | `kotlinFilters` | `true` |
 | `extreme` | `false` |
+| `ratchetEnabled` | `false` |
+| `ratchetBaseline` | `.mutaktor-baseline.json` |
+| `ratchetAutoUpdate` | `true` |
 | `historyInputLocation` | _(не задано)_ |
 | `historyOutputLocation` | _(не задано)_ |
-| `useClasspathFile` | `true` |
+
+---
 
 ## См. также
 
 - [Архитектура плагина](./01-architecture.md)
 - [Фильтр мусорных мутаций Kotlin](./03-kotlin-filters.md)
-- [Анализ в рамках git-диффа](./04-git-integration.md)
+- [Анализ в рамках git-diff](./04-git-integration.md)
 - [Форматы отчётов и Quality Gate](./05-reporting.md)

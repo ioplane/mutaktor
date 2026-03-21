@@ -1,0 +1,23 @@
+# Qodana Global Configuration
+# https://www.jetbrains.com/help/qodana/global-configuration.html
+
+version: "1.0"
+
+profile:
+  name: qodana.recommended
+
+exclude:
+  - name: All
+    paths:
+      - build-logic
+      - "**/build/**"
+      - "**/test/**"
+      - "**/functionalTest/**"
+      - docs
+      - deployment
+
+inspections:
+  - name: KotlinDeprecation
+    severity: WARNING
+  - name: UnusedImport
+    severity: WARNING
