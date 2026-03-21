@@ -1,5 +1,6 @@
 package io.github.dantte_lp.mutaktor
 
+import io.github.dantte_lp.mutaktor.git.GitDiffAnalyzer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
@@ -81,11 +82,25 @@ public class MutaktorPlugin : Plugin<Project> {
 
             // Core
             task.pitVersion.set(extension.pitVersion)
-            task.targetClasses.set(extension.targetClasses)
+            // Git-diff scoped analysis: override targetClasses if since is set
+            task.targetClasses.set(
+                extension.since.flatMap { sinceRef ->
+                    project.provider {
+                        val srcDirs = task.sourceDirs.files
+                        val changed = GitDiffAnalyzer.changedClasses(project.projectDir, sinceRef, srcDirs)
+                        if (changed.isEmpty()) {
+                            project.logger.lifecycle("Mutaktor: no changed classes since '{}' — using extension targetClasses", sinceRef)
+                            extension.targetClasses.get()
+                        } else {
+                            project.logger.lifecycle("Mutaktor: scoping to {} changed classes since '{}'", changed.size, sinceRef)
+                            changed
+                        }
+                    }
+                }.orElse(extension.targetClasses)
+            )
             task.targetTests.set(extension.targetTests)
             task.threads.set(extension.threads)
             task.mutators.set(extension.mutators)
-            // task.since wiring deferred to Sprint 4 (git-diff analysis)
 
             // Filtering
             task.excludedClasses.set(extension.excludedClasses)
