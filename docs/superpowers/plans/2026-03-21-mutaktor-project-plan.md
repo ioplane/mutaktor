@@ -97,8 +97,9 @@ mutaktor/
 
 ## Sprint Plan
 
-### Sprint 1: Project Scaffold (Week 1)
+### Sprint 1: Project Scaffold — DONE 2026-03-21
 **Goal:** Empty project compiles, tests run, CI green.
+**Result:** 5 tests (3 unit + 2 funcTest), BUILD SUCCESSFUL
 
 | # | Task | Files | Exit criteria |
 |---|------|-------|---------------|
@@ -110,8 +111,9 @@ mutaktor/
 | 1.6 | GitHub Actions CI workflow | `.github/workflows/ci.yml` | CI green on push |
 | 1.7 | README.md, LICENSE, CLAUDE.md, .editorconfig | Root files | Repo looks complete |
 
-### Sprint 2: Plugin Core — DSL + PIT Execution (Week 2-3)
+### Sprint 2: Plugin Core — DONE 2026-03-21
 **Goal:** `./gradlew mutate` runs PIT and produces HTML report.
+**Result:** 14 tests (10 unit + 4 funcTest), PIT runs end-to-end. 24 DSL properties, @CacheableTask.
 
 | # | Task | Files | Exit criteria |
 |---|------|-------|---------------|
@@ -124,8 +126,9 @@ mutaktor/
 | 2.7 | Functional tests with Gradle TestKit | Test suite | 10+ funcTests green |
 | 2.8 | Unit tests for extension defaults, arg building | Test suite | 20+ unit tests green |
 
-### Sprint 3: Kotlin Junk Filter (Week 4)
+### Sprint 3: Kotlin Junk Filter — DONE 2026-03-21
 **Goal:** PIT plugin filters Kotlin compiler artifacts from mutations.
+**Result:** 13 tests, KotlinJunkFilter with 5 filter patterns via PIT MutationInterceptor SPI.
 
 | # | Task | Files | Exit criteria |
 |---|------|-------|---------------|
@@ -136,8 +139,9 @@ mutaktor/
 | 3.5 | Auto-load filter JAR — plugin adds mutaktor-pitest-filter to PIT classpath | Plugin wiring | Filters active by default |
 | 3.6 | Integration tests with Kotlin test projects | funcTest | 5+ Kotlin-specific tests green |
 
-### Sprint 4: Git-Diff Analysis (Week 5)
+### Sprint 4: Git-Diff Analysis — DONE 2026-03-21
 **Goal:** `./gradlew mutate --since=main` mutates only changed code.
+**Result:** 10 tests (6 unit + 4 integration), GitDiffAnalyzer with Provider chain wiring.
 
 | # | Task | Files | Exit criteria |
 |---|------|-------|---------------|
@@ -147,8 +151,9 @@ mutaktor/
 | 4.4 | CLI option: `--mutaktor-since=main` via @Option | Task option | Works from command line |
 | 4.5 | Integration test: create branch, change file, verify scoped | funcTest | Only changed class mutated |
 
-### Sprint 5: Reporting (Week 6)
+### Sprint 5: Reporting — DONE 2026-03-21
 **Goal:** mutation-testing-elements JSON + SARIF output.
+**Result:** 9 tests, MutationElementsConverter + SarifConverter. No external JSON deps.
 
 | # | Task | Files | Exit criteria |
 |---|------|-------|---------------|

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- mutation-testing-elements JSON report converter — Stryker Dashboard compatible (Sprint 5)
+- SARIF 2.1.0 report converter — GitHub Code Scanning compatible, survived-only (Sprint 5)
+- Git-diff scoped analysis: `mutaktor { since.set("main") }` (Sprint 4)
 - Type-safe Kotlin DSL extension with 24 managed properties (Sprint 2)
 - PIT execution via JavaExec with full CLI argument builder (Sprint 2)
 - `mutaktor` dependency configuration with auto-resolved PIT + JUnit5 plugin (Sprint 2)
