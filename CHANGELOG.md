@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Quality gate: fail build if mutation score below threshold (Sprint 6)
 - Per-package mutation ratchet with `.mutaktor-baseline.json` (Sprint 10)
+- GraalVM + Quarkus auto-detect: auto-resolves standard JDK for PIT via Gradle Toolchain (Sprint 10)
 - `@MutationCritical` and `@SuppressMutations` annotations (Sprint 10)
 - `mutaktor-annotations` module — zero-dep annotation JAR (Sprint 10)
 - Annotation-based PIT interceptor (Sprint 10)

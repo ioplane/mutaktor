@@ -2,10 +2,12 @@ package io.github.dantte_lp.mutaktor
 
 import io.github.dantte_lp.mutaktor.extreme.ExtremeMutationConfig
 import io.github.dantte_lp.mutaktor.git.GitDiffAnalyzer
+import io.github.dantte_lp.mutaktor.toolchain.GraalVmDetector
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.jvm.toolchain.JavaToolchainService
 
 /**
  * Mutaktor — Kotlin-first Gradle plugin for PIT mutation testing.
@@ -163,6 +165,27 @@ public class MutaktorPlugin : Plugin<Project> {
             // JDK toolchain for PIT child process
             if (extension.javaLauncher.isPresent) {
                 task.javaLauncher.set(extension.javaLauncher)
+            }
+
+            // Auto-detect GraalVM + Quarkus → switch PIT to standard JDK
+            if (!extension.javaLauncher.isPresent) {
+                if (GraalVmDetector.isGraalVm() && GraalVmDetector.hasQuarkus(project)) {
+                    val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
+                    val standardJdk = GraalVmDetector.resolveStandardJdk(toolchains)
+                    if (standardJdk != null) {
+                        task.javaLauncher.set(standardJdk)
+                        project.logger.lifecycle(
+                            "Mutaktor: GraalVM + Quarkus detected. Auto-selected standard JDK for PIT child process."
+                        )
+                    } else {
+                        project.logger.warn(
+                            "Mutaktor: GraalVM + Quarkus detected but no standard JDK found.\n" +
+                            "PIT may fail with jrt:// classpath errors.\n" +
+                            "Fix: Add to settings.gradle.kts:\n" +
+                            "  plugins { id(\"org.gradle.toolchains.foojay-resolver-convention\") version \"0.9.0\" }"
+                        )
+                    }
+                }
             }
 
             // Run after test task
