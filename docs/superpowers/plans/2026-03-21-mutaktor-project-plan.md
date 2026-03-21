@@ -162,7 +162,8 @@ mutaktor/
 | 5.3 | DSL: `mutaktor { reports { json.set(true); sarif.set(true) } }` | Extension nested block | Reports generated alongside HTML |
 | 5.4 | Schema validation tests | Unit tests | JSON validates against mutation-testing-elements schema |
 
-### Sprint 6: CI/CD Integration (Week 7)
+### Sprint 6: CI/CD Integration — DONE 2026-03-21
+**Result:** 5 tests, QualityGate + GithubChecksReporter. java.net.http.HttpClient, no deps.
 **Goal:** GitHub Checks API with inline PR comments.
 
 | # | Task | Files | Exit criteria |

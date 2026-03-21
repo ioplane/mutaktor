@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Quality gate: fail build if mutation score below threshold (Sprint 6)
+- GitHub Checks API reporter with inline PR annotations for survived mutants (Sprint 6)
 - mutation-testing-elements JSON report converter — Stryker Dashboard compatible (Sprint 5)
 - SARIF 2.1.0 report converter — GitHub Code Scanning compatible, survived-only (Sprint 5)
 - Git-diff scoped analysis: `mutaktor { since.set("main") }` (Sprint 4)
