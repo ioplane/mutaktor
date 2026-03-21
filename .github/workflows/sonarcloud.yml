@@ -1,42 +1,42 @@
-name: SonarCloud
+name: SonarQube
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonarcloud:
+  build:
+    name: Build and analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for accurate blame
+          fetch-depth: 0
 
-      - uses: actions/setup-java@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
           java-version: 17
+          distribution: zulu
 
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build and test with coverage
-        run: ./gradlew check jacocoTestReport --no-daemon
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.2.0  # pinned — v5.0 has argument injection vuln
+      - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=ioplane_mutaktor
-            -Dsonar.organization=ioplane
-            -Dsonar.sources=mutaktor-gradle-plugin/src/main,mutaktor-pitest-filter/src/main,mutaktor-annotations/src/main
-            -Dsonar.tests=mutaktor-gradle-plugin/src/test,mutaktor-gradle-plugin/src/functionalTest,mutaktor-pitest-filter/src/test
-            -Dsonar.kotlin.file.suffixes=.kt,.kts
-            -Dsonar.coverage.jacoco.xmlReportPaths=**/build/reports/jacoco/test/jacocoTestReport.xml
-            -Dsonar.exclusions=build-logic/**,**/build/**,docs/**
+        run: ./gradlew build sonar --info
