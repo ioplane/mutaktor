@@ -12,6 +12,7 @@ import org.gradle.jvm.toolchain.JavaLauncher
 import java.math.BigDecimal
 import javax.inject.Inject
 
+
 /**
  * Type-safe DSL extension for Mutaktor — Kotlin-first PIT mutation testing.
  *
@@ -236,6 +237,17 @@ public abstract class MutaktorExtension @Inject constructor(
      */
     public abstract val useClasspathFile: Property<Boolean>
 
+    // ── Ratchet (mutation score floor) ────────────────────────────────
+
+    /** Enable per-package mutation score ratchet. Fails build if any package score drops. */
+    public abstract val ratchetEnabled: Property<Boolean>
+
+    /** Baseline file for ratchet comparison. Default: .mutaktor-baseline.json */
+    public abstract val ratchetBaseline: RegularFileProperty
+
+    /** Auto-update baseline when scores improve. */
+    public abstract val ratchetAutoUpdate: Property<Boolean>
+
     // ──────────────────────────────────────────────────────────────
     //  Conventions
     // ──────────────────────────────────────────────────────────────
@@ -268,5 +280,10 @@ public abstract class MutaktorExtension @Inject constructor(
 
         // Incremental
         useClasspathFile.convention(true)
+
+        // Ratchet
+        ratchetEnabled.convention(false)
+        ratchetBaseline.convention(layout.projectDirectory.file(".mutaktor-baseline.json"))
+        ratchetAutoUpdate.convention(true)
     }
 }

@@ -6,3 +6,4 @@ pluginManagement {
 
 include("mutaktor-gradle-plugin")
 include("mutaktor-pitest-filter")
+include("mutaktor-annotations")

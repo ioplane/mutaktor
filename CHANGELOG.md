@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Quality gate: fail build if mutation score below threshold (Sprint 6)
+- Per-package mutation ratchet with `.mutaktor-baseline.json` (Sprint 10)
+- `@MutationCritical` and `@SuppressMutations` annotations (Sprint 10)
+- `mutaktor-annotations` module — zero-dep annotation JAR (Sprint 10)
+- Annotation-based PIT interceptor (Sprint 10)
 - Multi-module aggregation: `mutateAggregate` task collects subproject reports (Sprint 8)
 - Full documentation (8 docs EN + RU, gobfd format) with mermaid diagrams
 - CONTRIBUTING.md, SECURITY.md, .gitleaks.toml
