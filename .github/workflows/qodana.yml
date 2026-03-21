@@ -1,29 +1,30 @@
 name: Qodana
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
-  checks: write
-  pull-requests: write
+  push:
+    branches:
+      - main
+      - 'releases/*'
 
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2024.3
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2025.3
         with:
-          args: >
-            --linter,jetbrains/qodana-jvm-community:latest,
-            --project-dir,.
+          pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          QODANA_ENDPOINT: 'https://qodana.cloud'
