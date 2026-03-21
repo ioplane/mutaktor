@@ -3,6 +3,10 @@
    <configuration>
       <verify-metadata>true</verify-metadata>
       <verify-signatures>false</verify-signatures>
+      <trusted-artifacts>
+         <trust group="org.gradle.toolchains"/>
+         <trust group="org.jetbrains.kotlinx" name="kotlinx-coroutines-bom"/>
+      </trusted-artifacts>
    </configuration>
    <components>
       <component group="antlr" name="antlr" version="2.7.7">
