@@ -83,121 +83,166 @@ public class MutaktorPlugin : Plugin<Project> {
             task.group = "verification"
             task.description = "Run PIT mutation testing"
 
-            // Core
-            task.pitVersion.set(extension.pitVersion)
-            // Git-diff scoped analysis: override targetClasses if since is set
-            task.targetClasses.set(
-                extension.since.flatMap { sinceRef ->
-                    project.provider {
-                        val srcDirs = task.sourceDirs.files
-                        val changed = GitDiffAnalyzer.changedClasses(project.projectDir, sinceRef, srcDirs)
-                        if (changed.isEmpty()) {
-                            project.logger.lifecycle("Mutaktor: no changed classes since '{}' — using extension targetClasses", sinceRef)
-                            extension.targetClasses.get()
-                        } else {
-                            project.logger.lifecycle("Mutaktor: scoping to {} changed classes since '{}'", changed.size, sinceRef)
-                            changed
-                        }
-                    }
-                }.orElse(extension.targetClasses)
-            )
-            task.targetTests.set(extension.targetTests)
-            task.threads.set(extension.threads)
-            // Extreme mode: override mutators if enabled
-            task.mutators.set(
-                extension.extreme.flatMap { isExtreme ->
-                    if (isExtreme) {
-                        project.provider { ExtremeMutationConfig.EXTREME_MUTATORS }
-                    } else {
-                        extension.mutators
-                    }
-                }.orElse(extension.mutators)
-            )
-
-            // Filtering
-            task.excludedClasses.set(extension.excludedClasses)
-            task.excludedMethods.set(extension.excludedMethods)
-            task.avoidCallsTo.set(extension.avoidCallsTo)
-
-            // Reporting
-            task.reportDir.set(extension.reportDir)
-            task.outputFormats.set(extension.outputFormats)
-            task.timestampedReports.set(extension.timestampedReports)
-            task.jsonReport.set(extension.jsonReport)
-            task.sarifReport.set(extension.sarifReport)
-            task.mutationScoreThreshold.set(extension.mutationScoreThreshold)
-
-            // Advanced
-            task.pitJvmArgs.set(extension.jvmArgs)
-            task.verbose.set(extension.verbose)
-            task.features.set(extension.features)
-            task.pluginConfiguration.set(extension.pluginConfiguration)
-            task.useClasspathFile.set(extension.useClasspathFile)
-
-            // Ratchet
-            task.ratchetEnabled.set(extension.ratchetEnabled)
-            task.ratchetBaseline.set(extension.ratchetBaseline)
-            task.ratchetAutoUpdate.set(extension.ratchetAutoUpdate)
-
-            // Incremental
-            task.historyInputLocation.set(extension.historyInputLocation)
-            task.historyOutputLocation.set(extension.historyOutputLocation)
-
-            // Classpath file location
-            task.classpathFile.set(
-                project.layout.buildDirectory.file("mutaktor/pitClasspath")
-            )
-
-            // Source dirs (Java + Kotlin)
-            task.sourceDirs.from(
-                mainSourceSet.map { ss ->
-                    ss.java.srcDirs + (ss.extensions.findByName("kotlin")
-                        ?.let { (it as org.gradle.api.file.SourceDirectorySet).srcDirs }
-                        ?: emptySet())
-                }
-            )
-
-            // Mutable code paths
-            task.mutableCodePaths.from(
-                mainSourceSet.map { ss -> ss.output.classesDirs }
-            )
-
-            // Test classpath
-            task.additionalClasspath.from(
-                testSourceSet.map { ss -> ss.runtimeClasspath }
-            )
-
-            // PIT launch classpath from the mutaktor configuration
-            task.launchClasspath.from(mutaktorConfiguration)
-
-            // JDK toolchain for PIT child process
-            if (extension.javaLauncher.isPresent) {
-                task.javaLauncher.set(extension.javaLauncher)
-            }
-
-            // Auto-detect GraalVM + Quarkus → switch PIT to standard JDK
-            if (!extension.javaLauncher.isPresent) {
-                if (GraalVmDetector.isGraalVm() && GraalVmDetector.hasQuarkus(project)) {
-                    val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
-                    val standardJdk = GraalVmDetector.resolveStandardJdk(toolchains)
-                    if (standardJdk != null) {
-                        task.javaLauncher.set(standardJdk)
-                        project.logger.lifecycle(
-                            "Mutaktor: GraalVM + Quarkus detected. Auto-selected standard JDK for PIT child process."
-                        )
-                    } else {
-                        project.logger.warn(
-                            "Mutaktor: GraalVM + Quarkus detected but no standard JDK found.\n" +
-                            "PIT may fail with jrt:// classpath errors.\n" +
-                            "Fix: Add to settings.gradle.kts:\n" +
-                            "  plugins { id(\"org.gradle.toolchains.foojay-resolver-convention\") version \"0.9.0\" }"
-                        )
-                    }
-                }
-            }
+            wireCoreProperties(task, extension, project)
+            wireFilteringProperties(task, extension)
+            wireReportingProperties(task, extension)
+            wireRatchetProperties(task, extension)
+            wireAdvancedProperties(task, extension, project)
+            wireSourceSets(task, mainSourceSet, testSourceSet, mutaktorConfiguration)
+            wireGraalVmAutoDetect(task, extension, project)
 
             // Run after test task
             task.mustRunAfter(project.tasks.named("test"))
+        }
+    }
+
+    private fun wireCoreProperties(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+        project: Project,
+    ) {
+        task.pitVersion.set(extension.pitVersion)
+        // Git-diff scoped analysis: override targetClasses if since is set
+        task.targetClasses.set(
+            extension.since.flatMap { sinceRef ->
+                project.provider {
+                    val srcDirs = task.sourceDirs.files
+                    val changed = GitDiffAnalyzer.changedClasses(project.projectDir, sinceRef, srcDirs)
+                    if (changed.isEmpty()) {
+                        project.logger.lifecycle("Mutaktor: no changed classes since '{}' — using extension targetClasses", sinceRef)
+                        extension.targetClasses.get()
+                    } else {
+                        project.logger.lifecycle("Mutaktor: scoping to {} changed classes since '{}'", changed.size, sinceRef)
+                        changed
+                    }
+                }
+            }.orElse(extension.targetClasses)
+        )
+        task.targetTests.set(extension.targetTests)
+        task.threads.set(extension.threads)
+        // Extreme mode: override mutators if enabled
+        task.mutators.set(
+            extension.extreme.flatMap { isExtreme ->
+                if (isExtreme) {
+                    project.provider { ExtremeMutationConfig.EXTREME_MUTATORS }
+                } else {
+                    extension.mutators
+                }
+            }.orElse(extension.mutators)
+        )
+    }
+
+    private fun wireFilteringProperties(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+    ) {
+        task.excludedClasses.set(extension.excludedClasses)
+        task.excludedMethods.set(extension.excludedMethods)
+        task.avoidCallsTo.set(extension.avoidCallsTo)
+    }
+
+    private fun wireReportingProperties(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+    ) {
+        task.reportDir.set(extension.reportDir)
+        task.outputFormats.set(extension.outputFormats)
+        task.timestampedReports.set(extension.timestampedReports)
+        task.jsonReport.set(extension.jsonReport)
+        task.sarifReport.set(extension.sarifReport)
+        task.mutationScoreThreshold.set(extension.mutationScoreThreshold)
+    }
+
+    private fun wireRatchetProperties(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+    ) {
+        task.ratchetEnabled.set(extension.ratchetEnabled)
+        task.ratchetBaseline.set(extension.ratchetBaseline)
+        task.ratchetAutoUpdate.set(extension.ratchetAutoUpdate)
+    }
+
+    private fun wireAdvancedProperties(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+        project: Project,
+    ) {
+        task.pitJvmArgs.set(extension.jvmArgs)
+        task.verbose.set(extension.verbose)
+        task.features.set(extension.features)
+        task.pluginConfiguration.set(extension.pluginConfiguration)
+        task.useClasspathFile.set(extension.useClasspathFile)
+
+        // Incremental
+        task.historyInputLocation.set(extension.historyInputLocation)
+        task.historyOutputLocation.set(extension.historyOutputLocation)
+
+        // Classpath file location
+        task.classpathFile.set(
+            project.layout.buildDirectory.file("mutaktor/pitClasspath")
+        )
+    }
+
+    private fun wireSourceSets(
+        task: MutaktorTask,
+        mainSourceSet: org.gradle.api.NamedDomainObjectProvider<org.gradle.api.tasks.SourceSet>,
+        testSourceSet: org.gradle.api.NamedDomainObjectProvider<org.gradle.api.tasks.SourceSet>,
+        mutaktorConfiguration: org.gradle.api.artifacts.Configuration,
+    ) {
+        // Source dirs (Java + Kotlin)
+        task.sourceDirs.from(
+            mainSourceSet.map { ss ->
+                ss.java.srcDirs + (ss.extensions.findByName("kotlin")
+                    ?.let { (it as org.gradle.api.file.SourceDirectorySet).srcDirs }
+                    ?: emptySet())
+            }
+        )
+
+        // Mutable code paths
+        task.mutableCodePaths.from(
+            mainSourceSet.map { ss -> ss.output.classesDirs }
+        )
+
+        // Test classpath
+        task.additionalClasspath.from(
+            testSourceSet.map { ss -> ss.runtimeClasspath }
+        )
+
+        // PIT launch classpath from the mutaktor configuration
+        task.launchClasspath.from(mutaktorConfiguration)
+
+        // JDK toolchain for PIT child process
+        if (task.javaLauncher.isPresent) return
+        // Extension-level launcher takes priority (handled in wireGraalVmAutoDetect)
+    }
+
+    private fun wireGraalVmAutoDetect(
+        task: MutaktorTask,
+        extension: MutaktorExtension,
+        project: Project,
+    ) {
+        if (extension.javaLauncher.isPresent) {
+            task.javaLauncher.set(extension.javaLauncher)
+            return
+        }
+
+        // Auto-detect GraalVM + Quarkus → switch PIT to standard JDK
+        if (!GraalVmDetector.isGraalVm() || !GraalVmDetector.hasQuarkus(project)) return
+
+        val toolchains = project.extensions.getByType(JavaToolchainService::class.java)
+        val standardJdk = GraalVmDetector.resolveStandardJdk(toolchains)
+        if (standardJdk != null) {
+            task.javaLauncher.set(standardJdk)
+            project.logger.lifecycle(
+                "Mutaktor: GraalVM + Quarkus detected. Auto-selected standard JDK for PIT child process."
+            )
+        } else {
+            project.logger.warn(
+                "Mutaktor: GraalVM + Quarkus detected but no standard JDK found.\n" +
+                "PIT may fail with jrt:// classpath errors.\n" +
+                "Fix: Add to settings.gradle.kts:\n" +
+                "  plugins { id(\"org.gradle.toolchains.foojay-resolver-convention\") version \"0.9.0\" }"
+            )
         }
     }
 

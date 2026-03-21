@@ -65,17 +65,19 @@ public object MutationRatchet {
             packageMutations.getOrPut(packageName) { mutableListOf() }.add(status)
         }
 
-        return packageMutations.map { (pkg, statuses) ->
-            val total = statuses.size
-            val killed = statuses.count { it in KILLED_STATUSES }
-            val score = if (total == 0) 100 else killed * 100 / total
-            pkg to PackageScore(
-                packageName = pkg,
-                score = score,
-                total = total,
-                killed = killed,
-            )
-        }.toMap()
+        return buildMap {
+            for ((pkg, statuses) in packageMutations) {
+                val total = statuses.size
+                val killed = statuses.count { it in KILLED_STATUSES }
+                val score = if (total == 0) 100 else killed * 100 / total
+                put(pkg, PackageScore(
+                    packageName = pkg,
+                    score = score,
+                    total = total,
+                    killed = killed,
+                ))
+            }
+        }
     }
 
     /**
@@ -91,18 +93,16 @@ public object MutationRatchet {
 
         for ((pkg, currentScore) in current) {
             val baselineScore = baseline[pkg]
-            if (baselineScore == null) {
-                newPackages.add(currentScore)
-            } else if (currentScore.score < baselineScore.score) {
-                regressions.add(
+            when {
+                baselineScore == null -> newPackages.add(currentScore)
+                currentScore.score < baselineScore.score -> regressions.add(
                     Regression(
                         packageName = pkg,
                         previousScore = baselineScore.score,
                         currentScore = currentScore.score,
                     )
                 )
-            } else if (currentScore.score > baselineScore.score) {
-                improvements.add(
+                currentScore.score > baselineScore.score -> improvements.add(
                     Improvement(
                         packageName = pkg,
                         previousScore = baselineScore.score,
@@ -114,9 +114,9 @@ public object MutationRatchet {
 
         return RatchetResult(
             passed = regressions.isEmpty(),
-            regressions = regressions,
-            improvements = improvements,
-            newPackages = newPackages,
+            regressions = regressions.toList(),
+            improvements = improvements.toList(),
+            newPackages = newPackages.toList(),
         )
     }
 

@@ -241,85 +241,92 @@ public abstract class MutaktorTask : JavaExec() {
             return
         }
 
-        // 1. JSON report (mutation-testing-elements)
-        if (jsonReport.getOrElse(false)) {
-            val sourceRoot = sourceDirs.files.firstOrNull() ?: reportDirectory
-            val json = MutationElementsConverter.convert(mutationsXml, sourceRoot)
-            val jsonFile = reportDirectory.resolve("mutations.json")
-            jsonFile.writeText(json)
-            logger.lifecycle("Mutaktor: wrote mutation-testing-elements JSON to {}", jsonFile)
-        }
+        generateJsonReport(mutationsXml, reportDirectory)
+        generateSarifReport(mutationsXml, reportDirectory)
+        evaluateQualityGate(mutationsXml)
+        evaluateRatchet(mutationsXml)
+        reportToGithub(mutationsXml)
+    }
 
-        // 2. SARIF report
-        if (sarifReport.getOrElse(false)) {
-            val sarif = SarifConverter.convert(mutationsXml, pitVersion.getOrElse("unknown"))
-            val sarifFile = reportDirectory.resolve("mutations.sarif.json")
-            sarifFile.writeText(sarif)
-            logger.lifecycle("Mutaktor: wrote SARIF report to {}", sarifFile)
-        }
+    private fun generateJsonReport(mutationsXml: File, reportDirectory: File) {
+        if (!jsonReport.getOrElse(false)) return
+        val sourceRoot = sourceDirs.files.firstOrNull() ?: reportDirectory
+        val json = MutationElementsConverter.convert(mutationsXml, sourceRoot)
+        val jsonFile = reportDirectory.resolve("mutations.json")
+        jsonFile.writeText(json)
+        logger.lifecycle("Mutaktor: wrote mutation-testing-elements JSON to {}", jsonFile)
+    }
 
-        // 3. Quality gate
-        if (mutationScoreThreshold.isPresent) {
-            val threshold = mutationScoreThreshold.get()
-            val result = QualityGate.evaluate(mutationsXml, threshold)
-            logger.lifecycle(
-                "Mutaktor: mutation score {} % ({}/{} killed) — threshold {} %",
-                result.mutationScore, result.killedMutations, result.totalMutations, threshold,
+    private fun generateSarifReport(mutationsXml: File, reportDirectory: File) {
+        if (!sarifReport.getOrElse(false)) return
+        val sarif = SarifConverter.convert(mutationsXml, pitVersion.getOrElse("unknown"))
+        val sarifFile = reportDirectory.resolve("mutations.sarif.json")
+        sarifFile.writeText(sarif)
+        logger.lifecycle("Mutaktor: wrote SARIF report to {}", sarifFile)
+    }
+
+    private fun evaluateQualityGate(mutationsXml: File) {
+        if (!mutationScoreThreshold.isPresent) return
+        val threshold = mutationScoreThreshold.get()
+        val result = QualityGate.evaluate(mutationsXml, threshold)
+        logger.lifecycle(
+            "Mutaktor: mutation score {} % ({}/{} killed) — threshold {} %",
+            result.mutationScore, result.killedMutations, result.totalMutations, threshold,
+        )
+        if (!result.passed) {
+            throw GradleException(
+                "Mutaktor: quality gate FAILED — mutation score ${result.mutationScore}% is below threshold ${threshold}%"
             )
-            if (!result.passed) {
-                throw GradleException(
-                    "Mutaktor: quality gate FAILED — mutation score ${result.mutationScore}% is below threshold ${threshold}%"
-                )
-            }
+        }
+    }
+
+    private fun evaluateRatchet(mutationsXml: File) {
+        if (!ratchetEnabled.getOrElse(false)) return
+        val baselineFile = ratchetBaseline.asFile.orNull
+        val baseline = if (baselineFile != null) RatchetBaseline.load(baselineFile) else emptyMap()
+        val currentScores = MutationRatchet.computeScores(mutationsXml)
+        val ratchetResult = MutationRatchet.evaluate(currentScores, baseline)
+
+        if (ratchetResult.improvements.isNotEmpty() || ratchetResult.newPackages.isNotEmpty()) {
+            logger.lifecycle("Mutaktor: ratchet — {} improvement(s), {} new package(s)",
+                ratchetResult.improvements.size, ratchetResult.newPackages.size)
         }
 
-        // 4. Ratchet
-        if (ratchetEnabled.getOrElse(false)) {
-            val baselineFile = ratchetBaseline.asFile.orNull
-            val baseline = if (baselineFile != null) RatchetBaseline.load(baselineFile) else emptyMap()
-            val currentScores = MutationRatchet.computeScores(mutationsXml)
-            val ratchetResult = MutationRatchet.evaluate(currentScores, baseline)
-
-            if (ratchetResult.improvements.isNotEmpty() || ratchetResult.newPackages.isNotEmpty()) {
-                logger.lifecycle("Mutaktor: ratchet — {} improvement(s), {} new package(s)",
-                    ratchetResult.improvements.size, ratchetResult.newPackages.size)
-            }
-
-            if (ratchetAutoUpdate.getOrElse(true) && baselineFile != null) {
-                RatchetBaseline.save(baselineFile, currentScores)
-                logger.lifecycle("Mutaktor: updated ratchet baseline {}", baselineFile)
-            }
-
-            if (!ratchetResult.passed) {
-                val regressionDetails = ratchetResult.regressions.joinToString("\n") {
-                    "  ${it.packageName}: ${it.previousScore}% → ${it.currentScore}%"
-                }
-                throw GradleException(
-                    "Mutaktor: ratchet FAILED — mutation score regression detected:\n$regressionDetails"
-                )
-            }
+        if (ratchetAutoUpdate.getOrElse(true) && baselineFile != null) {
+            RatchetBaseline.save(baselineFile, currentScores)
+            logger.lifecycle("Mutaktor: updated ratchet baseline {}", baselineFile)
         }
 
-        // 5. GitHub Checks
+        if (!ratchetResult.passed) {
+            val regressionDetails = ratchetResult.regressions.joinToString("\n") {
+                "  ${it.packageName}: ${it.previousScore}% → ${it.currentScore}%"
+            }
+            throw GradleException(
+                "Mutaktor: ratchet FAILED — mutation score regression detected:\n$regressionDetails"
+            )
+        }
+    }
+
+    private fun reportToGithub(mutationsXml: File) {
         val githubToken = System.getenv("GITHUB_TOKEN")
         val githubRepository = System.getenv("GITHUB_REPOSITORY")
         val githubSha = System.getenv("GITHUB_SHA")
 
-        if (!githubToken.isNullOrBlank() && !githubRepository.isNullOrBlank() && !githubSha.isNullOrBlank()) {
-            val threshold = mutationScoreThreshold.getOrElse(0)
-            val gateResult = QualityGate.evaluate(mutationsXml, threshold)
-            val survived = QualityGate.survivedMutants(mutationsXml)
+        if (githubToken.isNullOrBlank() || githubRepository.isNullOrBlank() || githubSha.isNullOrBlank()) return
 
-            GithubChecksReporter.report(
-                token = githubToken,
-                repository = githubRepository,
-                sha = githubSha,
-                mutants = survived,
-                mutationScore = gateResult.mutationScore,
-                threshold = threshold,
-            )
-            logger.lifecycle("Mutaktor: posted GitHub Check Run with {} annotation(s)", survived.size)
-        }
+        val threshold = mutationScoreThreshold.getOrElse(0)
+        val gateResult = QualityGate.evaluate(mutationsXml, threshold)
+        val survived = QualityGate.survivedMutants(mutationsXml)
+
+        GithubChecksReporter.report(
+            token = githubToken,
+            repository = githubRepository,
+            sha = githubSha,
+            mutants = survived,
+            mutationScore = gateResult.mutationScore,
+            threshold = threshold,
+        )
+        logger.lifecycle("Mutaktor: posted GitHub Check Run with {} annotation(s)", survived.size)
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -353,25 +360,8 @@ public abstract class MutaktorTask : JavaExec() {
             add("--reportDir=${reportDir.get().asFile.absolutePath}")
         }
 
-        // Source directories
-        if (!sourceDirs.isEmpty) {
-            add("--sourceDirs=${sourceDirs.files.joinToString(",") { it.absolutePath }}")
-        }
-
-        // Classpath handling
-        if (useClasspathFile.getOrElse(false) && classpathFile.isPresent) {
-            add("--classPathFile=${classpathFile.get().asFile.absolutePath}")
-        } else {
-            val cpFiles = (additionalClasspath.files + mutableCodePaths.files)
-            if (cpFiles.isNotEmpty()) {
-                add("--classPath=${cpFiles.joinToString(",") { it.absolutePath }}")
-            }
-        }
-
-        // Mutable code paths
-        if (!mutableCodePaths.isEmpty) {
-            add("--mutableCodePaths=${mutableCodePaths.files.joinToString(",") { it.absolutePath }}")
-        }
+        // File-related arguments
+        addAll(buildFileArguments())
 
         // Child JVM args
         if (pitJvmArgs.isPresent && pitJvmArgs.get().isNotEmpty()) {
@@ -390,6 +380,31 @@ public abstract class MutaktorTask : JavaExec() {
                     pluginConfiguration.get().entries.joinToString(",") { "${it.key}=${it.value}" }
                 }",
             )
+        }
+    }
+
+    /**
+     * Builds file-related PIT arguments: sourceDirs, classpath, mutableCodePaths, and history.
+     */
+    private fun buildFileArguments(): List<String> = buildList {
+        // Source directories
+        if (!sourceDirs.isEmpty) {
+            add("--sourceDirs=${sourceDirs.files.joinToString(",") { it.absolutePath }}")
+        }
+
+        // Classpath handling
+        if (useClasspathFile.getOrElse(false) && classpathFile.isPresent) {
+            add("--classPathFile=${classpathFile.get().asFile.absolutePath}")
+        } else {
+            val cpFiles = (additionalClasspath.files + mutableCodePaths.files)
+            if (cpFiles.isNotEmpty()) {
+                add("--classPath=${cpFiles.joinToString(",") { it.absolutePath }}")
+            }
+        }
+
+        // Mutable code paths
+        if (!mutableCodePaths.isEmpty) {
+            add("--mutableCodePaths=${mutableCodePaths.files.joinToString(",") { it.absolutePath }}")
         }
 
         // History

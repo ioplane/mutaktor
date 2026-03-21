@@ -91,6 +91,6 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title "mutaktor ${GITHUB_REF_NAME}" \
             --notes-file release-notes.md \
-            $(find artifacts/ -name "*.jar" -o -name "*.sha256" | tr '\n' ' ')
+            $(find ./artifacts/ -name "*.jar" -o -name "*.sha256" | tr '\n' ' ')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
