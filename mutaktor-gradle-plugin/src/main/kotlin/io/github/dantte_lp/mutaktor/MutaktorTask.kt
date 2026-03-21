@@ -186,7 +186,7 @@ public abstract class MutaktorTask : JavaExec() {
      * Format: `--argName=value` for scalars, `--argName=a,b,c` for collections.
      * Only present (non-empty) properties produce arguments.
      */
-    private fun buildPitArguments(): List<String> = buildList {
+    internal fun buildPitArguments(): List<String> = buildList {
 
         // Required
         addSetArg("targetClasses", targetClasses)

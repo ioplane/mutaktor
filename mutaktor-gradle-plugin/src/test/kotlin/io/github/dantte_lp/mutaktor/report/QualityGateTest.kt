@@ -157,4 +157,46 @@ class QualityGateTest {
         result.mutationScore shouldBe 75
         result.passed shouldBe true
     }
+
+    @Test
+    fun `TIMED_OUT counted as killed`() {
+        // 1 KILLED + 1 TIMED_OUT + 1 SURVIVED = 2/3 killed = 66%
+        val xml = writeMutationsXml(
+            """
+            <mutations>
+              ${mutationXml("KILLED", true, line = 1)}
+              ${mutationXml("TIMED_OUT", true, line = 2)}
+              ${mutationXml("SURVIVED", false, line = 3)}
+            </mutations>
+            """.trimIndent(),
+        )
+
+        val result = QualityGate.evaluate(xml, threshold = 60)
+
+        result.totalMutations shouldBe 3
+        result.killedMutations shouldBe 2
+        result.survivedMutations shouldBe 1
+        result.mutationScore shouldBe 66
+        result.passed shouldBe true
+    }
+
+    @Test
+    fun `MEMORY_ERROR counted as killed`() {
+        // 1 MEMORY_ERROR = 1/1 killed = 100%
+        val xml = writeMutationsXml(
+            """
+            <mutations>
+              ${mutationXml("MEMORY_ERROR", true, line = 1)}
+            </mutations>
+            """.trimIndent(),
+        )
+
+        val result = QualityGate.evaluate(xml, threshold = 80)
+
+        result.totalMutations shouldBe 1
+        result.killedMutations shouldBe 1
+        result.survivedMutations shouldBe 0
+        result.mutationScore shouldBe 100
+        result.passed shouldBe true
+    }
 }

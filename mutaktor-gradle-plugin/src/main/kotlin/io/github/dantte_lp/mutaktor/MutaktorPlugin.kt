@@ -160,6 +160,11 @@ public class MutaktorPlugin : Plugin<Project> {
             // PIT launch classpath from the mutaktor configuration
             task.launchClasspath.from(mutaktorConfiguration)
 
+            // JDK toolchain for PIT child process
+            if (extension.javaLauncher.isPresent) {
+                task.javaLauncher.set(extension.javaLauncher)
+            }
+
             // Run after test task
             task.mustRunAfter(project.tasks.named("test"))
         }

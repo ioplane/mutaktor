@@ -118,6 +118,15 @@ class MutaktorPluginTest {
     }
 
     @Test
+    fun `javaLauncher is not set by default`() {
+        val project = ProjectBuilder.builder().build()
+        project.plugins.apply("java")
+        project.plugins.apply(MutaktorPlugin.PLUGIN_ID)
+        val ext = project.extensions.getByType(MutaktorExtension::class.java)
+        ext.javaLauncher.isPresent shouldBe false
+    }
+
+    @Test
     fun `kotlinFilters defaults to true`() {
         val project = ProjectBuilder.builder().build()
         project.plugins.apply("java")

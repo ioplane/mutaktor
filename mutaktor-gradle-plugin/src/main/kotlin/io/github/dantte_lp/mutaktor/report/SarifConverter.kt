@@ -1,8 +1,12 @@
 package io.github.dantte_lp.mutaktor.report
 
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.escapeJson
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.quote
+import io.github.dantte_lp.mutaktor.util.SourcePathResolver
+import io.github.dantte_lp.mutaktor.util.XmlParser
+import io.github.dantte_lp.mutaktor.util.textOf
 import org.w3c.dom.Element
 import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * Converts PIT `mutations.xml` to SARIF 2.1.0 for GitHub Code Scanning.
@@ -35,11 +39,7 @@ public object SarifConverter {
     )
 
     private fun parseSurvivedMutations(xmlFile: File): List<SurvivedMutation> {
-        val factory = DocumentBuilderFactory.newInstance()
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(xmlFile)
-        doc.documentElement.normalize()
+        val doc = XmlParser.parseSecureXml(xmlFile)
 
         val nodeList = doc.getElementsByTagName("mutation")
         val result = mutableListOf<SurvivedMutation>()
@@ -51,10 +51,7 @@ public object SarifConverter {
 
             val sourceFile = element.textOf("sourceFile")
             val mutatedClass = element.textOf("mutatedClass")
-            val packagePath = mutatedClass
-                .substringBeforeLast('.')
-                .replace('.', '/')
-            val relativePath = "src/main/java/$packagePath/$sourceFile"
+            val relativePath = SourcePathResolver.resolveRelativePath(mutatedClass, sourceFile)
 
             result += SurvivedMutation(
                 relativePath = relativePath,
@@ -103,18 +100,4 @@ public object SarifConverter {
         sb.appendLine("}")
         return sb.toString()
     }
-
-    // ── Helpers ──────────────────────────────────────────────────
-
-    private fun quote(value: String): String = "\"$value\""
-
-    private fun escapeJson(value: String): String = value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-        .replace("\t", "\\t")
-
-    private fun Element.textOf(tag: String): String =
-        getElementsByTagName(tag).item(0).textContent.trim()
 }

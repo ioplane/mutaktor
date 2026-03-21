@@ -1,8 +1,10 @@
 package io.github.dantte_lp.mutaktor.report
 
+import io.github.dantte_lp.mutaktor.util.SourcePathResolver
+import io.github.dantte_lp.mutaktor.util.XmlParser
+import io.github.dantte_lp.mutaktor.util.textOf
 import org.w3c.dom.Element
 import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * Checks mutation score against a configurable threshold.
@@ -22,6 +24,12 @@ public object QualityGate {
     )
 
     /**
+     * Statuses that count as "effectively killed" — the mutant was detected
+     * by the test suite, whether by assertion failure, timeout, or crash.
+     */
+    private val KILLED_STATUSES = setOf("KILLED", "TIMED_OUT", "MEMORY_ERROR")
+
+    /**
      * Parses PIT `mutations.xml` and evaluates the quality gate.
      *
      * The mutation score is `killed * 100 / total` (integer division).
@@ -33,7 +41,7 @@ public object QualityGate {
     public fun evaluate(mutationsXml: File, threshold: Int): Result {
         val statuses = parseMutationStatuses(mutationsXml)
         val total = statuses.size
-        val killed = statuses.count { it == "KILLED" }
+        val killed = statuses.count { it in KILLED_STATUSES }
         val survived = statuses.count { it == "SURVIVED" }
         val score = if (total == 0) 100 else killed * 100 / total
 
@@ -53,11 +61,7 @@ public object QualityGate {
      * @param mutationsXml the PIT XML report file
      */
     public fun survivedMutants(mutationsXml: File): List<GithubChecksReporter.SurvivedMutant> {
-        val factory = DocumentBuilderFactory.newInstance()
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(mutationsXml)
-        doc.documentElement.normalize()
+        val doc = XmlParser.parseSecureXml(mutationsXml)
 
         val nodeList = doc.getElementsByTagName("mutation")
         val result = mutableListOf<GithubChecksReporter.SurvivedMutant>()
@@ -69,10 +73,7 @@ public object QualityGate {
 
             val sourceFile = element.textOf("sourceFile")
             val mutatedClass = element.textOf("mutatedClass")
-            val packagePath = mutatedClass
-                .substringBeforeLast('.')
-                .replace('.', '/')
-            val relativePath = "src/main/java/$packagePath/$sourceFile"
+            val relativePath = SourcePathResolver.resolveRelativePath(mutatedClass, sourceFile)
 
             result += GithubChecksReporter.SurvivedMutant(
                 file = relativePath,
@@ -87,11 +88,7 @@ public object QualityGate {
     // -- Internal helpers -----------------------------------------------------
 
     private fun parseMutationStatuses(xmlFile: File): List<String> {
-        val factory = DocumentBuilderFactory.newInstance()
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(xmlFile)
-        doc.documentElement.normalize()
+        val doc = XmlParser.parseSecureXml(xmlFile)
 
         val nodeList = doc.getElementsByTagName("mutation")
         val statuses = mutableListOf<String>()
@@ -102,7 +99,4 @@ public object QualityGate {
         }
         return statuses
     }
-
-    private fun Element.textOf(tag: String): String =
-        getElementsByTagName(tag).item(0).textContent.trim()
 }

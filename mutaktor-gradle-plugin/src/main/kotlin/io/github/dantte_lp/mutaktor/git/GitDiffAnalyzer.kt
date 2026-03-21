@@ -24,6 +24,7 @@ public object GitDiffAnalyzer {
         sinceRef: String,
         sourceDirs: Set<File>,
     ): Set<String> {
+        require(!sinceRef.startsWith("-")) { "sinceRef must not start with '-': $sinceRef" }
         val diffOutput = runGitDiff(projectDir, sinceRef)
         if (diffOutput.isBlank()) return emptySet()
 

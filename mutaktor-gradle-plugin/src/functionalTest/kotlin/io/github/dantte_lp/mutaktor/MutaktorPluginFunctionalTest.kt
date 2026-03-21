@@ -181,6 +181,21 @@ class MutaktorPluginFunctionalTest {
     }
 
     @Test
+    fun `mutate task accepts javaLauncher configuration`() {
+        writeSettingsFile()
+        writeBuildFile("""
+            mutaktor {
+                targetClasses.set(setOf("com.example.*"))
+                // javaLauncher not set — should use default
+            }
+        """.trimIndent())
+        writeJavaClass()
+        writeJavaTest()
+        val result = runner("mutate").build()
+        result.task(":mutate")?.outcome shouldBe TaskOutcome.SUCCESS
+    }
+
+    @Test
     fun `custom pit version is used`() {
         writeSettingsFile()
         writeBuildFile(

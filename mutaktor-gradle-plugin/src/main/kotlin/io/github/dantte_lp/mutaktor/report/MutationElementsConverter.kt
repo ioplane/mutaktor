@@ -1,8 +1,13 @@
 package io.github.dantte_lp.mutaktor.report
 
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.escapeJson
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.quote
+import io.github.dantte_lp.mutaktor.util.SourcePathResolver
+import io.github.dantte_lp.mutaktor.util.XmlParser
+import io.github.dantte_lp.mutaktor.util.optionalTextOf
+import io.github.dantte_lp.mutaktor.util.textOf
 import org.w3c.dom.Element
 import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * Converts PIT `mutations.xml` to mutation-testing-elements JSON
@@ -40,12 +45,7 @@ public object MutationElementsConverter {
     )
 
     private fun parseMutations(xmlFile: File): List<Mutation> {
-        val factory = DocumentBuilderFactory.newInstance()
-        // Disable external entities for security
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-        val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(xmlFile)
-        doc.documentElement.normalize()
+        val doc = XmlParser.parseSecureXml(xmlFile)
 
         val nodeList = doc.getElementsByTagName("mutation")
         val result = mutableListOf<Mutation>()
@@ -54,10 +54,7 @@ public object MutationElementsConverter {
             val element = nodeList.item(i) as Element
             val sourceFile = element.textOf("sourceFile")
             val mutatedClass = element.textOf("mutatedClass")
-            val packagePath = mutatedClass
-                .substringBeforeLast('.')
-                .replace('.', '/')
-            val relativePath = "src/main/java/$packagePath/$sourceFile"
+            val relativePath = SourcePathResolver.resolveRelativePath(mutatedClass, sourceFile)
 
             result += Mutation(
                 relativePath = relativePath,
@@ -140,23 +137,4 @@ public object MutationElementsConverter {
 
     private fun simplifyMutatorName(fqn: String): String =
         fqn.substringAfterLast('.')
-
-    private fun quote(value: String): String = "\"$value\""
-
-    private fun escapeJson(value: String): String = value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-        .replace("\t", "\\t")
-
-    private fun Element.textOf(tag: String): String =
-        getElementsByTagName(tag).item(0).textContent.trim()
-
-    private fun Element.optionalTextOf(tag: String): String? {
-        val nodes = getElementsByTagName(tag)
-        if (nodes.length == 0) return null
-        val text = nodes.item(0).textContent.trim()
-        return text.ifBlank { null }
-    }
 }

@@ -83,9 +83,10 @@
 | Kotlin filters | Yes | N/A | N/A | **Yes** |
 | Predictive selection | No | No | Yes | **Planned** |
 | Quality dashboard | No | No | Yes | **Planned** |
+| GitLab integration | No | No | No | **Yes (Pro)** |
 | License | Commercial | Commercial | Commercial | **Apache 2.0 core + Pro** |
 
-**Unique selling point:** Only tool combining mutation testing + AI test generation + git-aware scoping in one open-source package.
+**Unique selling point:** Only tool combining mutation testing + AI test generation + git-aware scoping + GitLab/GitHub CI integration in one open-source package.
 
 ---
 
@@ -94,9 +95,9 @@
 | Version | Theme | Revenue Feature | Timeline |
 |---------|-------|-----------------|----------|
 | **v0.2.0** | Foundation | javaLauncher (GraalVM fix), QA fixes, per-package ratchet, `@MutationCritical` | Sprint 9–10 |
-| **v0.3.0** | AI-Native | MCP server, LLM mutant killer (Pro tier pilot) | Sprint 11–12 |
+| **v0.3.0** | AI-Native + Pro | MCP server, LLM mutant killer, **GitLab MR integration** (Pro tier) | Sprint 11–12 |
 | **v0.4.0** | Intelligence | Mutation debt tracker, difficulty scoring, flaky detection | Sprint 13–14 |
-| **v0.5.0** | Scale | Multi-module analytics, GitLab/BB integration | Sprint 15–16 |
+| **v0.5.0** | Scale | Multi-module analytics, Bitbucket integration | Sprint 15–16 |
 | **v1.0.0** | GA | Stable API, Plugin Portal, documentation | Sprint 17 |
 | **v1.1.0** | Pro Launch | Test effectiveness dashboard (SaaS), incremental intelligence | Sprint 18–20 |
 | **v1.2.0** | Enterprise | Risk-based prioritization, predictive mutation selection, SSO | Sprint 21–24 |

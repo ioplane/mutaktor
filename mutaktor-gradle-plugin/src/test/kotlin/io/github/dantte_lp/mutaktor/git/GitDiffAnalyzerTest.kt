@@ -1,8 +1,10 @@
 package io.github.dantte_lp.mutaktor.git
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -122,6 +124,17 @@ class GitDiffAnalyzerTest {
             )
 
             result shouldBe "com.example.Service*"
+        }
+    }
+
+    @Nested
+    inner class InputValidation {
+
+        @Test
+        fun `rejects sinceRef starting with dash`(@TempDir tempDir: File) {
+            shouldThrow<IllegalArgumentException> {
+                GitDiffAnalyzer.changedClasses(tempDir, "--output=/etc/passwd", setOf(tempDir.resolve("src")))
+            }.message shouldContain "must not start with '-'"
         }
     }
 

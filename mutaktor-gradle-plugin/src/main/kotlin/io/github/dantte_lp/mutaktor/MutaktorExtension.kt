@@ -8,6 +8,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
+import org.gradle.jvm.toolchain.JavaLauncher
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -156,6 +157,25 @@ public abstract class MutaktorExtension @Inject constructor(
 
     /** Enable verbose PIT console output. Useful for debugging. */
     public abstract val verbose: Property<Boolean>
+
+    // ── JDK Toolchain for PIT child process ──────────────────────────────
+    /**
+     * Java launcher for the PIT child process (minion JVM).
+     *
+     * Use this to run PIT on a different JDK than the build JDK.
+     * Required when building with GraalVM (jrt:// module paths break PIT).
+     *
+     * Example:
+     * ```kotlin
+     * mutaktor {
+     *     javaLauncher.set(javaToolchains.launcherFor {
+     *         languageVersion.set(JavaLanguageVersion.of(25))
+     *         vendor.set(JvmVendorSpec.AZUL)
+     *     })
+     * }
+     * ```
+     */
+    public abstract val javaLauncher: Property<JavaLauncher>
 
     // ──────────────────────────────────────────────────────────────
     //  Git-aware analysis (mutaktor-specific)

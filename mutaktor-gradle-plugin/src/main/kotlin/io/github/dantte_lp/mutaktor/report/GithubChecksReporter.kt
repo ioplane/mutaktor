@@ -1,5 +1,7 @@
 package io.github.dantte_lp.mutaktor.report
 
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.escapeJson
+import io.github.dantte_lp.mutaktor.util.JsonBuilder.quote
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -17,7 +19,7 @@ public object GithubChecksReporter {
     private val logger: Logger = Logger.getLogger(GithubChecksReporter::class.java.name)
 
     /** Maximum annotations per GitHub API request. */
-    private const val ANNOTATION_BATCH_SIZE = 50
+    internal const val ANNOTATION_BATCH_SIZE: Int = 50
 
     public data class SurvivedMutant(
         val file: String,       // relative path: src/main/kotlin/com/example/Foo.kt
@@ -105,7 +107,7 @@ public object GithubChecksReporter {
 
     // -- JSON body builders ---------------------------------------------------
 
-    private fun buildCreateBody(
+    internal fun buildCreateBody(
         sha: String,
         conclusion: String,
         title: String,
@@ -125,7 +127,7 @@ public object GithubChecksReporter {
         append('}')
     }
 
-    private fun buildUpdateBody(
+    internal fun buildUpdateBody(
         title: String,
         summary: String,
         annotationsJson: String,
@@ -139,7 +141,7 @@ public object GithubChecksReporter {
         append('}')
     }
 
-    private fun annotationsJson(mutants: List<SurvivedMutant>): String =
+    internal fun annotationsJson(mutants: List<SurvivedMutant>): String =
         mutants.joinToString(",") { mutant ->
             buildString {
                 append('{')
@@ -152,7 +154,7 @@ public object GithubChecksReporter {
             }
         }
 
-    private fun buildSummary(survivedCount: Int, score: Int, threshold: Int): String = buildString {
+    internal fun buildSummary(survivedCount: Int, score: Int, threshold: Int): String = buildString {
         append("**Mutation Score:** $score% (threshold: $threshold%)\\n\\n")
         if (survivedCount > 0) {
             append("$survivedCount survived mutant(s) detected. ")
@@ -166,15 +168,6 @@ public object GithubChecksReporter {
 
     private fun simplifyMutator(fqn: String): String =
         fqn.substringAfterLast('.')
-
-    private fun quote(value: String): String = "\"$value\""
-
-    private fun escapeJson(value: String): String = value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-        .replace("\t", "\\t")
 
     /** Extracts a numeric JSON field value (e.g. "id": 123). */
     private fun extractJsonField(json: String, field: String): String {
