@@ -51,7 +51,7 @@ mutation score = (killed mutants / total mutants) × 100
 
 ## Documentation Map
 
-```kroki-mermaid
+```mermaid
 graph TD
     INDEX["README.md\nDocumentation Index"]
 
@@ -186,7 +186,7 @@ mutaktor {
 
 ## Architecture Overview
 
-```kroki-mermaid
+```mermaid
 graph TB
     subgraph "Gradle Build"
         PLG["MutaktorPlugin\napply()"]

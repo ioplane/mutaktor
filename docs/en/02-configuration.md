@@ -294,7 +294,7 @@ mutaktor {
 
 When `javaLauncher` is **not** explicitly set, `MutaktorPlugin` automatically checks whether the current build JDK is GraalVM and whether the project uses Quarkus. If both conditions are true, `GraalVmDetector` attempts to resolve a standard JDK via `JavaToolchainService` (trying Azul, Adoptium, and Amazon vendors in order):
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A["javaLauncher set?"] -- Yes --> B["Use configured launcher"]
     A -- No --> C["GraalVmDetector.isGraalVm()?"]

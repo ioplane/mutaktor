@@ -25,7 +25,7 @@ The `KotlinJunkFilter` is a PIT `MutationInterceptor` that identifies and discar
 
 PIT's interceptor pipeline runs between mutation generation and mutant execution. Interceptors of type `FILTER` remove mutations from the set that PIT will actually test.
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A["PIT generates candidate mutations\nfor a class"] --> B["ServiceLoader discovers\nMutationInterceptorFactory"]
     B --> C["KotlinJunkFilterFactory\ncreateInterceptor()"]

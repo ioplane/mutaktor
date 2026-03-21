@@ -17,7 +17,7 @@ sidebar_label: Отчётность
 
 После завершения мутирования и прогона тестов Mutaktor создаёт несколько форматов отчётов из нативного XML-вывода PIT. Каждый формат ориентирован на конкретного потребителя: HTML-отчёт — для ручного просмотра, mutation-testing-elements JSON питает Stryker Dashboard, SARIF-файл интегрируется с GitHub Code Scanning, а GitHub Checks API выводит отдельных выживших мутантов как встроенные аннотации в PR.
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     PIT[PIT\nмутационный анализ] --> XML[mutations.xml\nНативный XML PIT]
     PIT --> HTML[index.html\nHTML-отчёт PIT]
@@ -323,7 +323,7 @@ GitHub Checks API принимает максимум 50 аннотаций за
 1. Первый запрос `POST /repos/{owner}/{repo}/check-runs` создаёт Check Run с первыми 50 аннотациями.
 2. Последующие запросы `PATCH /repos/{owner}/{repo}/check-runs/{id}` добавляют оставшиеся пакеты.
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant R as GithubChecksReporter
     participant API as GitHub API

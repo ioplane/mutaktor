@@ -23,7 +23,7 @@ sidebar_label: Kotlin-фильтры
 
 Конвейер перехватчиков PIT выполняется между генерацией мутаций и исполнением мутантов. Перехватчики типа `FILTER` удаляют мутации из набора, который PIT будет фактически тестировать.
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A[PIT генерирует мутации-кандидаты\nдля класса] --> B[MutationInterceptorFactory\nобнаружена через META-INF/services]
     B --> C[KotlinJunkFilterFactory\ncreateInterceptor]

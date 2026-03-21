@@ -137,7 +137,7 @@ mutaktor/
 
 The `check` task is wired as:
 
-```kroki-mermaid
+```mermaid
 graph LR
     check --> test
     check --> functionalTest

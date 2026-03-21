@@ -52,7 +52,7 @@ mutaktor/
 
 Следующая диаграмма показывает, как конфигурация проходит от скрипта сборки через PIT обратно в конвертеры отчётов.
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A["build.gradle.kts\n(mutaktor { ... })"] --> B[MutaktorExtension\n25 Provider properties]
     B --> C{since задан?}
@@ -76,7 +76,7 @@ flowchart TD
 
 Mutaktor создаёт отдельную Gradle-конфигурацию `mutaktor` для управления classpath PIT. Это полностью изолирует зависимости PIT от собственных зависимостей проекта.
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     subgraph "конфигурация mutaktor"
         P1["org.pitest:pitest-command-line:1.23.0"]
@@ -114,7 +114,7 @@ flowchart LR
 
 ## Жизненный цикл применения плагина
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant G as Gradle
     participant MP as MutaktorPlugin
@@ -149,7 +149,7 @@ plugins {
 
 ## Граф задач Gradle
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     compileKotlin --> compileTestKotlin
     compileTestKotlin --> test

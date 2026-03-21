@@ -22,7 +22,7 @@ The result is a mutation run whose cost is proportional to the **size of the cha
 
 ## How It Works
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant P as MutaktorPlugin
     participant G as GitDiffAnalyzer

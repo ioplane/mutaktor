@@ -21,7 +21,7 @@ sidebar_label: Индекс
 
 ## Карта документации
 
-```kroki-mermaid
+```mermaid
 graph TD
     INDEX["README.md\nИндекс документации"]
 
@@ -110,7 +110,7 @@ graph TD
 
 ## Обзор архитектуры
 
-```kroki-mermaid
+```mermaid
 graph TB
     subgraph "Сборка Gradle"
         PLG["MutaktorPlugin\napply()"]

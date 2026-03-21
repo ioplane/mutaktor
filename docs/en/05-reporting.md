@@ -16,7 +16,7 @@ sidebar_label: Reporting
 
 After PIT finishes mutation analysis, Mutaktor runs a **post-processing pipeline** that produces multiple output formats from the native PIT XML and enforces configurable quality policies. Each component targets a different consumer: HTML for manual inspection, mutation-testing-elements JSON for the Stryker Dashboard, SARIF for GitHub Code Scanning, the quality gate for CI pass/fail, the ratchet for regression prevention, and GitHub Checks for inline PR annotations.
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     PIT["PIT mutation analysis"] --> XML["mutations.xml\nPIT native XML"]
     PIT --> HTML["index.html\nPIT HTML report"]
@@ -282,7 +282,7 @@ The ratchet prevents mutation score regression on a per-package basis. On each r
 
 ### How It Works
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A["mutations.xml"] --> B["MutationRatchet.computeScores()"]
     B --> C["Per-package scores\n{com.example.service: 88%,\n com.example.domain: 76%}"]
@@ -356,7 +356,7 @@ This reporter activates automatically when all three environment variables are p
 
 The GitHub Checks API accepts a maximum of 50 annotations per request. When more than 50 mutants survive, `GithubChecksReporter` automatically batches them:
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant R as GithubChecksReporter
     participant API as GitHub Checks API

@@ -116,7 +116,7 @@ mutaktor/
 
 Задача `check` подключена следующим образом:
 
-```kroki-mermaid
+```mermaid
 graph LR
     check --> test
     check --> functionalTest

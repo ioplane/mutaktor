@@ -21,7 +21,7 @@ sidebar_label: Git-интеграция
 
 ## Как это работает
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant P as MutaktorPlugin
     participant G as GitDiffAnalyzer

@@ -83,7 +83,7 @@ Reports are written to `build/reports/mutaktor/`.
 
 ## Architecture
 
-```kroki-mermaid
+```mermaid
 graph TB
     subgraph "Gradle Build"
         PLG["MutaktorPlugin\napply()"]

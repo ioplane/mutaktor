@@ -72,7 +72,7 @@ jobs:
 
 ### Обзор CI-воркфлоу
 
-```kroki-mermaid
+```mermaid
 graph TD
     push["push / pull_request"] --> matrix["Матрица: JDK 17 / 21 / 25"]
     matrix --> checkout["actions/checkout@v4"]
@@ -168,7 +168,7 @@ jobs:
 
 ### Обзор release-воркфлоу
 
-```kroki-mermaid
+```mermaid
 graph TD
     tag["git push tag v*"] --> matrix2["Матрица: JDK 17 / 25\nbuild-and-test"]
     matrix2 --> jar["Загрузка JAR'ов\n(только JDK 17)"]
@@ -305,7 +305,7 @@ jobs:
 
 ### Как работают аннотации
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant T as MutaktorTask
     participant Q as QualityGate

@@ -78,7 +78,7 @@ mutaktor/
 
 The following diagram shows how configuration flows from `build.gradle.kts` through the plugin into PIT and then through the post-processing pipeline.
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     A["build.gradle.kts\n(mutaktor { ... })"] --> B["MutaktorExtension\n32 Provider properties"]
     B --> C{since set?}
@@ -115,7 +115,7 @@ flowchart TD
 
 Mutaktor creates a dedicated `mutaktor` Gradle configuration to manage the PIT classpath. This keeps PIT dependencies completely separate from the project's own compile and runtime dependencies.
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     subgraph "mutaktor configuration (resolved at task execution)"
         P1["org.pitest:pitest-command-line:1.23.0"]
@@ -145,7 +145,7 @@ When `useClasspathFile = true` (the default), the `additionalClasspath` and `mut
 
 After PIT completes, `MutaktorTask.postProcess()` runs five sequential steps. Each step is guarded: if `mutations.xml` does not exist (PIT produced no output or failed), the entire post-processing phase is skipped with a warning.
 
-```kroki-mermaid
+```mermaid
 flowchart TD
     Start["PIT exec() completes"] --> Check{"mutations.xml\nexists?"}
     Check -- No --> Warn["logger.warn: skipping post-processing"]
@@ -202,7 +202,7 @@ flowchart TD
 
 ## Plugin Application Lifecycle
 
-```kroki-mermaid
+```mermaid
 sequenceDiagram
     participant G as Gradle
     participant MP as MutaktorPlugin
@@ -232,7 +232,7 @@ sequenceDiagram
 
 ## Gradle Task Graph
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     compileKotlin --> compileTestKotlin
     compileTestKotlin --> test
@@ -291,7 +291,7 @@ plugins {
 
 The `mutateAggregate` task copies each subproject's `build/reports/mutaktor/` into `build/reports/mutaktor-aggregate/<subprojectName>/` and automatically runs after each subproject's `mutate` task.
 
-```kroki-mermaid
+```mermaid
 flowchart LR
     A["subproject-a: mutate"] --> AGG["root: mutateAggregate\nbuild/reports/mutaktor-aggregate/"]
     B["subproject-b: mutate"] --> AGG
