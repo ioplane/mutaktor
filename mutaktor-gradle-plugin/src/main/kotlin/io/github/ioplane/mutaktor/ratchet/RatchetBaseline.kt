@@ -29,22 +29,21 @@ public object RatchetBaseline {
         val content = file.readText().trim()
         if (content.isEmpty() || content == "{}") return emptyMap()
 
-        val result = mutableMapOf<String, MutationRatchet.PackageScore>()
         val entryPattern = Regex(
             """"([^"]+)"\s*:\s*\{\s*"score"\s*:\s*(\d+)\s*,\s*"total"\s*:\s*(\d+)\s*,\s*"killed"\s*:\s*(\d+)\s*\}"""
         )
 
-        for (match in entryPattern.findAll(content)) {
-            val (packageName, score, total, killed) = match.destructured
-            result[packageName] = MutationRatchet.PackageScore(
-                packageName = packageName,
-                score = score.toInt(),
-                total = total.toInt(),
-                killed = killed.toInt(),
-            )
+        return buildMap {
+            for (match in entryPattern.findAll(content)) {
+                val (packageName, score, total, killed) = match.destructured
+                put(packageName, MutationRatchet.PackageScore(
+                    packageName = packageName,
+                    score = score.toInt(),
+                    total = total.toInt(),
+                    killed = killed.toInt(),
+                ))
+            }
         }
-
-        return result
     }
 
     /**

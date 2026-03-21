@@ -87,36 +87,37 @@ public object MutationRatchet {
         current: Map<String, PackageScore>,
         baseline: Map<String, PackageScore>,
     ): RatchetResult {
-        val regressions = mutableListOf<Regression>()
-        val improvements = mutableListOf<Improvement>()
-        val newPackages = mutableListOf<PackageScore>()
-
-        for ((pkg, currentScore) in current) {
-            val baselineScore = baseline[pkg]
-            when {
-                baselineScore == null -> newPackages.add(currentScore)
-                currentScore.score < baselineScore.score -> regressions.add(
-                    Regression(
+        val regressions = buildList {
+            for ((pkg, currentScore) in current) {
+                val baselineScore = baseline[pkg] ?: continue
+                if (currentScore.score < baselineScore.score) {
+                    add(Regression(
                         packageName = pkg,
                         previousScore = baselineScore.score,
                         currentScore = currentScore.score,
-                    )
-                )
-                currentScore.score > baselineScore.score -> improvements.add(
-                    Improvement(
-                        packageName = pkg,
-                        previousScore = baselineScore.score,
-                        currentScore = currentScore.score,
-                    )
-                )
+                    ))
+                }
             }
         }
+        val improvements = buildList {
+            for ((pkg, currentScore) in current) {
+                val baselineScore = baseline[pkg] ?: continue
+                if (currentScore.score > baselineScore.score) {
+                    add(Improvement(
+                        packageName = pkg,
+                        previousScore = baselineScore.score,
+                        currentScore = currentScore.score,
+                    ))
+                }
+            }
+        }
+        val newPackages = current.filterKeys { it !in baseline }.values.toList()
 
         return RatchetResult(
             passed = regressions.isEmpty(),
-            regressions = regressions.toList(),
-            improvements = improvements.toList(),
-            newPackages = newPackages.toList(),
+            regressions = regressions,
+            improvements = improvements,
+            newPackages = newPackages,
         )
     }
 

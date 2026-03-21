@@ -45,12 +45,9 @@ jobs:
         run: ./gradlew build -Pversion="${VERSION}" --no-daemon -x test
       - name: Generate checksums
         run: |
-          cd mutaktor-gradle-plugin/build/libs
-          sha256sum *.jar > checksums-plugin.sha256
-          cd ../../../mutaktor-pitest-filter/build/libs
-          sha256sum *.jar > checksums-filter.sha256
-          cd ../../../mutaktor-annotations/build/libs
-          sha256sum *.jar > checksums-annotations.sha256
+          sha256sum ./mutaktor-gradle-plugin/build/libs/*.jar > ./mutaktor-gradle-plugin/build/libs/checksums-plugin.sha256
+          sha256sum ./mutaktor-pitest-filter/build/libs/*.jar > ./mutaktor-pitest-filter/build/libs/checksums-filter.sha256
+          sha256sum ./mutaktor-annotations/build/libs/*.jar > ./mutaktor-annotations/build/libs/checksums-annotations.sha256
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
