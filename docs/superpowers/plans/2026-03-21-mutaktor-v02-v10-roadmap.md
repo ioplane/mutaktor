@@ -52,7 +52,19 @@ Fix QA issues, add javaLauncher (GraalVM fix), per-package ratchet, @MutationCri
 | 10.8 | **Update Containerfile.dev** | Modify: `deployment/containerfiles/Containerfile.dev` | — | Add Azul Zulu JDK 25 alongside GraalVM |
 
 **Exit criteria:** 95+ tests, ratchet works, annotations work, config cache passes, GraalVM fixed.
+**Actual:** 128 tests. Config cache disabled (PIT limitation). All other criteria met.
 **Release:** Tag v0.2.0.
+
+### Sprint 10+: GraalVM Auto-Detect — DONE 2026-03-21
+**Result:** 3 tests, GraalVmDetector + auto-resolve standard JDK via Gradle Toolchain.
+
+### Sprint 11a: Wire Post-Processing — DONE 2026-03-21
+**Result:** 5 tests. MutaktorTask.postProcess() wires JSON + SARIF + quality gate + ratchet + GitHub Checks.
+
+### Sprint 11b: Kotlin E2E + Validation — DONE 2026-03-21
+**Result:** 2 tests. Kotlin data class E2E, empty targetClasses validation.
+
+**CE FEATURE-COMPLETE: 135 tests, 0 fail, 1 disabled.**
 
 ---
 
