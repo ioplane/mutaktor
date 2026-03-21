@@ -123,6 +123,9 @@ public class MutaktorPlugin : Plugin<Project> {
             task.reportDir.set(extension.reportDir)
             task.outputFormats.set(extension.outputFormats)
             task.timestampedReports.set(extension.timestampedReports)
+            task.jsonReport.set(extension.jsonReport)
+            task.sarifReport.set(extension.sarifReport)
+            task.mutationScoreThreshold.set(extension.mutationScoreThreshold)
 
             // Advanced
             task.pitJvmArgs.set(extension.jvmArgs)
@@ -130,6 +133,11 @@ public class MutaktorPlugin : Plugin<Project> {
             task.features.set(extension.features)
             task.pluginConfiguration.set(extension.pluginConfiguration)
             task.useClasspathFile.set(extension.useClasspathFile)
+
+            // Ratchet
+            task.ratchetEnabled.set(extension.ratchetEnabled)
+            task.ratchetBaseline.set(extension.ratchetBaseline)
+            task.ratchetAutoUpdate.set(extension.ratchetAutoUpdate)
 
             // Incremental
             task.historyInputLocation.set(extension.historyInputLocation)

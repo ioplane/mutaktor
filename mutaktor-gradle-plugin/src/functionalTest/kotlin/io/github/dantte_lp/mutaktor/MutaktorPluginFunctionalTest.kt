@@ -67,6 +67,12 @@ class MutaktorPluginFunctionalTest {
                 public int add(int a, int b) {
                     return a + b;
                 }
+                public int multiply(int a, int b) {
+                    return a * b;
+                }
+                public boolean isPositive(int n) {
+                    return n > 0;
+                }
             }
             """.trimIndent()
         )
@@ -211,5 +217,55 @@ class MutaktorPluginFunctionalTest {
         val result = runner("mutate", "--info").build()
 
         result.output shouldContain "1.22.0"
+    }
+
+    @Test
+    fun `mutate produces mutation-testing-elements JSON report`() {
+        writeSettingsFile()
+        writeBuildFile("""
+            mutaktor {
+                targetClasses.set(setOf("com.example.*"))
+            }
+        """.trimIndent())
+        writeJavaClass()
+        writeJavaTest()
+        val result = runner("mutate").build()
+        result.task(":mutate")?.outcome shouldBe TaskOutcome.SUCCESS
+        val jsonFile = projectDir.resolve("build/reports/mutaktor/mutations.json")
+        jsonFile.exists() shouldBe true
+        jsonFile.readText() shouldContain "schemaVersion"
+    }
+
+    @Test
+    fun `mutate with SARIF produces SARIF report`() {
+        writeSettingsFile()
+        writeBuildFile("""
+            mutaktor {
+                targetClasses.set(setOf("com.example.*"))
+                sarifReport.set(true)
+            }
+        """.trimIndent())
+        writeJavaClass()
+        writeJavaTest()
+        val result = runner("mutate").build()
+        result.task(":mutate")?.outcome shouldBe TaskOutcome.SUCCESS
+        val sarifFile = projectDir.resolve("build/reports/mutaktor/mutations.sarif.json")
+        sarifFile.exists() shouldBe true
+        sarifFile.readText() shouldContain "sarif"
+    }
+
+    @Test
+    fun `quality gate fails when score below threshold`() {
+        writeSettingsFile()
+        writeBuildFile("""
+            mutaktor {
+                targetClasses.set(setOf("com.example.*"))
+                mutationScoreThreshold.set(100)  // impossible to hit — ensures gate fails
+            }
+        """.trimIndent())
+        writeJavaClass()
+        writeJavaTest()
+        val result = runner("mutate").buildAndFail()
+        result.output shouldContain "quality gate FAILED"
     }
 }

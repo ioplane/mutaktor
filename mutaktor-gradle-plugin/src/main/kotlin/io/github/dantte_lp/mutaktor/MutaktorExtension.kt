@@ -112,6 +112,15 @@ public abstract class MutaktorExtension @Inject constructor(
     /** When `false`, reports overwrite previous results instead of creating timestamped sub-dirs. */
     public abstract val timestampedReports: Property<Boolean>
 
+    /** When `true`, produces a mutation-testing-elements JSON report (`mutations.json`). */
+    public abstract val jsonReport: Property<Boolean>
+
+    /** When `true`, produces a SARIF 2.1.0 report (`mutations.sarif.json`). */
+    public abstract val sarifReport: Property<Boolean>
+
+    /** Minimum required mutation score (0-100). Build fails if score is below this threshold. Unset means no gate. */
+    public abstract val mutationScoreThreshold: Property<Int>
+
     // ──────────────────────────────────────────────────────────────
     //  Test configuration
     // ──────────────────────────────────────────────────────────────
@@ -264,6 +273,8 @@ public abstract class MutaktorExtension @Inject constructor(
         reportDir.convention(layout.buildDirectory.dir("reports/mutaktor"))
         outputFormats.convention(setOf("HTML", "XML"))
         timestampedReports.convention(false)
+        jsonReport.convention(true)
+        sarifReport.convention(false)
 
         // Test
         junit5PluginVersion.convention("1.2.3")

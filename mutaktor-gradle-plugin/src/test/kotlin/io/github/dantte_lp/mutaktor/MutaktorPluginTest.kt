@@ -135,4 +135,24 @@ class MutaktorPluginTest {
         val ext = project.extensions.getByType(MutaktorExtension::class.java)
         ext.kotlinFilters.get() shouldBe true
     }
+
+    @Test
+    fun `jsonReport defaults to true`() {
+        val project = ProjectBuilder.builder().build()
+        project.plugins.apply("java")
+        project.plugins.apply(MutaktorPlugin.PLUGIN_ID)
+
+        val ext = project.extensions.getByType(MutaktorExtension::class.java)
+        ext.jsonReport.get() shouldBe true
+    }
+
+    @Test
+    fun `sarifReport defaults to false`() {
+        val project = ProjectBuilder.builder().build()
+        project.plugins.apply("java")
+        project.plugins.apply(MutaktorPlugin.PLUGIN_ID)
+
+        val ext = project.extensions.getByType(MutaktorExtension::class.java)
+        ext.sarifReport.get() shouldBe false
+    }
 }

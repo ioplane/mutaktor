@@ -1,5 +1,12 @@
 package io.github.dantte_lp.mutaktor
 
+import io.github.dantte_lp.mutaktor.ratchet.MutationRatchet
+import io.github.dantte_lp.mutaktor.ratchet.RatchetBaseline
+import io.github.dantte_lp.mutaktor.report.GithubChecksReporter
+import io.github.dantte_lp.mutaktor.report.MutationElementsConverter
+import io.github.dantte_lp.mutaktor.report.QualityGate
+import io.github.dantte_lp.mutaktor.report.SarifConverter
+import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
@@ -115,6 +122,39 @@ public abstract class MutaktorTask : JavaExec() {
     @get:Optional
     public abstract val useClasspathFile: Property<Boolean>
 
+    // ── Post-processing inputs ────────────────────────────────────────────────
+
+    /** When true, produces a mutation-testing-elements JSON report. */
+    @get:Input
+    @get:Optional
+    public abstract val jsonReport: Property<Boolean>
+
+    /** When true, produces a SARIF 2.1.0 report. */
+    @get:Input
+    @get:Optional
+    public abstract val sarifReport: Property<Boolean>
+
+    /** Minimum required mutation score (0-100). Build fails if score is below this threshold. */
+    @get:Input
+    @get:Optional
+    public abstract val mutationScoreThreshold: Property<Int>
+
+    /** Enable per-package mutation score ratchet. */
+    @get:Input
+    @get:Optional
+    public abstract val ratchetEnabled: Property<Boolean>
+
+    /** Baseline file for ratchet comparison. */
+    @get:InputFiles
+    @get:PathSensitive(RELATIVE)
+    @get:Optional
+    public abstract val ratchetBaseline: RegularFileProperty
+
+    /** Auto-update baseline when scores improve. */
+    @get:Input
+    @get:Optional
+    public abstract val ratchetAutoUpdate: Property<Boolean>
+
     // ── File inputs ───────────────────────────────────────────────────────────
 
     /** Project source directories (for source-level reporting). */
@@ -160,6 +200,10 @@ public abstract class MutaktorTask : JavaExec() {
     // ── Execution ─────────────────────────────────────────────────────────────
 
     override fun exec() {
+        if (!targetClasses.isPresent || targetClasses.get().isEmpty()) {
+            throw GradleException("Mutaktor: targetClasses is empty. Set mutaktor.targetClasses or project.group.")
+        }
+
         mainClass.set(PIT_MAIN_CLASS)
         classpath = launchClasspath
 
@@ -176,6 +220,106 @@ public abstract class MutaktorTask : JavaExec() {
         )
 
         super.exec()
+
+        postProcess()
+    }
+
+    // ── Post-processing ────────────────────────────────────────────────────────
+
+    /**
+     * Runs post-processing steps after PIT completes:
+     * JSON report, SARIF report, quality gate, ratchet, GitHub Checks.
+     *
+     * Gracefully handles missing `mutations.xml` (PIT might fail or produce no mutations).
+     */
+    private fun postProcess() {
+        val reportDirectory = reportDir.get().asFile
+        val mutationsXml = reportDirectory.resolve("mutations.xml")
+
+        if (!mutationsXml.exists()) {
+            logger.warn("Mutaktor: mutations.xml not found in {} — skipping post-processing", reportDirectory)
+            return
+        }
+
+        // 1. JSON report (mutation-testing-elements)
+        if (jsonReport.getOrElse(false)) {
+            val sourceRoot = sourceDirs.files.firstOrNull() ?: reportDirectory
+            val json = MutationElementsConverter.convert(mutationsXml, sourceRoot)
+            val jsonFile = reportDirectory.resolve("mutations.json")
+            jsonFile.writeText(json)
+            logger.lifecycle("Mutaktor: wrote mutation-testing-elements JSON to {}", jsonFile)
+        }
+
+        // 2. SARIF report
+        if (sarifReport.getOrElse(false)) {
+            val sarif = SarifConverter.convert(mutationsXml, pitVersion.getOrElse("unknown"))
+            val sarifFile = reportDirectory.resolve("mutations.sarif.json")
+            sarifFile.writeText(sarif)
+            logger.lifecycle("Mutaktor: wrote SARIF report to {}", sarifFile)
+        }
+
+        // 3. Quality gate
+        if (mutationScoreThreshold.isPresent) {
+            val threshold = mutationScoreThreshold.get()
+            val result = QualityGate.evaluate(mutationsXml, threshold)
+            logger.lifecycle(
+                "Mutaktor: mutation score {} % ({}/{} killed) — threshold {} %",
+                result.mutationScore, result.killedMutations, result.totalMutations, threshold,
+            )
+            if (!result.passed) {
+                throw GradleException(
+                    "Mutaktor: quality gate FAILED — mutation score ${result.mutationScore}% is below threshold ${threshold}%"
+                )
+            }
+        }
+
+        // 4. Ratchet
+        if (ratchetEnabled.getOrElse(false)) {
+            val baselineFile = ratchetBaseline.asFile.orNull
+            val baseline = if (baselineFile != null) RatchetBaseline.load(baselineFile) else emptyMap()
+            val currentScores = MutationRatchet.computeScores(mutationsXml)
+            val ratchetResult = MutationRatchet.evaluate(currentScores, baseline)
+
+            if (ratchetResult.improvements.isNotEmpty() || ratchetResult.newPackages.isNotEmpty()) {
+                logger.lifecycle("Mutaktor: ratchet — {} improvement(s), {} new package(s)",
+                    ratchetResult.improvements.size, ratchetResult.newPackages.size)
+            }
+
+            if (ratchetAutoUpdate.getOrElse(true) && baselineFile != null) {
+                RatchetBaseline.save(baselineFile, currentScores)
+                logger.lifecycle("Mutaktor: updated ratchet baseline {}", baselineFile)
+            }
+
+            if (!ratchetResult.passed) {
+                val regressionDetails = ratchetResult.regressions.joinToString("\n") {
+                    "  ${it.packageName}: ${it.previousScore}% → ${it.currentScore}%"
+                }
+                throw GradleException(
+                    "Mutaktor: ratchet FAILED — mutation score regression detected:\n$regressionDetails"
+                )
+            }
+        }
+
+        // 5. GitHub Checks
+        val githubToken = System.getenv("GITHUB_TOKEN")
+        val githubRepository = System.getenv("GITHUB_REPOSITORY")
+        val githubSha = System.getenv("GITHUB_SHA")
+
+        if (!githubToken.isNullOrBlank() && !githubRepository.isNullOrBlank() && !githubSha.isNullOrBlank()) {
+            val threshold = mutationScoreThreshold.getOrElse(0)
+            val gateResult = QualityGate.evaluate(mutationsXml, threshold)
+            val survived = QualityGate.survivedMutants(mutationsXml)
+
+            GithubChecksReporter.report(
+                token = githubToken,
+                repository = githubRepository,
+                sha = githubSha,
+                mutants = survived,
+                mutationScore = gateResult.mutationScore,
+                threshold = threshold,
+            )
+            logger.lifecycle("Mutaktor: posted GitHub Check Run with {} annotation(s)", survived.size)
+        }
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
