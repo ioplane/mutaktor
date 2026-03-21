@@ -1,5 +1,6 @@
 package io.github.dantte_lp.mutaktor
 
+import io.github.dantte_lp.mutaktor.extreme.ExtremeMutationConfig
 import io.github.dantte_lp.mutaktor.git.GitDiffAnalyzer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -100,7 +101,16 @@ public class MutaktorPlugin : Plugin<Project> {
             )
             task.targetTests.set(extension.targetTests)
             task.threads.set(extension.threads)
-            task.mutators.set(extension.mutators)
+            // Extreme mode: override mutators if enabled
+            task.mutators.set(
+                extension.extreme.flatMap { isExtreme ->
+                    if (isExtreme) {
+                        project.provider { ExtremeMutationConfig.EXTREME_MUTATORS }
+                    } else {
+                        extension.mutators
+                    }
+                }.orElse(extension.mutators)
+            )
 
             // Filtering
             task.excludedClasses.set(extension.excludedClasses)

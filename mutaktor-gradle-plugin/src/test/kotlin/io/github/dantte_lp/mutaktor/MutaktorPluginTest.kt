@@ -108,6 +108,16 @@ class MutaktorPluginTest {
     }
 
     @Test
+    fun `extreme defaults to false`() {
+        val project = ProjectBuilder.builder().build()
+        project.plugins.apply("java")
+        project.plugins.apply(MutaktorPlugin.PLUGIN_ID)
+
+        val ext = project.extensions.getByType(MutaktorExtension::class.java)
+        ext.extreme.get() shouldBe false
+    }
+
+    @Test
     fun `kotlinFilters defaults to true`() {
         val project = ProjectBuilder.builder().build()
         project.plugins.apply("java")

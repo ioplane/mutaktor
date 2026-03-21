@@ -181,6 +181,18 @@ public abstract class MutaktorExtension @Inject constructor(
      */
     public abstract val kotlinFilters: Property<Boolean>
 
+    // ── Extreme mutation (mutaktor-specific) ──────────────────────────────
+
+    /**
+     * Enable extreme mutation testing mode.
+     *
+     * Replaces fine-grained mutators with method-body removal mutators.
+     * Generates far fewer mutants (~1 per method vs ~10 per method),
+     * making mutation testing practical for large codebases.
+     * Effectively detects pseudo-tested methods.
+     */
+    public abstract val extreme: Property<Boolean>
+
     // ──────────────────────────────────────────────────────────────
     //  Incremental analysis
     // ──────────────────────────────────────────────────────────────
@@ -230,6 +242,9 @@ public abstract class MutaktorExtension @Inject constructor(
 
         // Kotlin filter
         kotlinFilters.convention(true)
+
+        // Extreme mutation
+        extreme.convention(false)
 
         // Incremental
         useClasspathFile.convention(true)

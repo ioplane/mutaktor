@@ -173,7 +173,8 @@ mutaktor/
 | 6.3 | GitHub Actions workflow example | docs + example | Working PR comment example |
 | 6.4 | Quality gate: fail if mutation score < threshold on changed code | Task failure | Build fails below threshold |
 
-### Sprint 7: Extreme Mutation + Incremental (Week 8)
+### Sprint 7: Extreme Mutation — DONE 2026-03-21
+**Result:** 3+1 tests, ExtremeMutationConfig + extreme DSL property + Provider chain wiring.
 **Goal:** Method-body removal mode + smart incremental.
 
 | # | Task | Files | Exit criteria |
