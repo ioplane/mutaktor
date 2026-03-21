@@ -6,24 +6,23 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   analysis:
-    runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
       id-token: write
-      contents: read
       actions: read
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: false
 
       - name: Run Scorecard
-        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46  # v2.4.0
+        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
         with:
           results_file: results.sarif
           results_format: sarif

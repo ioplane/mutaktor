@@ -1,5 +1,0 @@
-configurations:
-  - id: "mutaktor-default"
-    name: "Mutaktor Default"
-    description: "Default Qodana configuration for mutaktor Kotlin Gradle plugin"
-    qodanaYaml: "qodana.yaml"
