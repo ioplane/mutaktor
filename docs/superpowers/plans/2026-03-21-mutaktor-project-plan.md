@@ -207,9 +207,13 @@ mutaktor/
 
 | Milestone | Version | Date target | Deliverable |
 |-----------|---------|-------------|-------------|
-| **MVP** | v2.0.0 | Sprint 5 complete | Plugin runs PIT, Kotlin filter, git-diff, JSON report |
-| **CI-ready** | v2.1.0 | Sprint 6 complete | GitHub Checks, SARIF, quality gates |
-| **Production** | v2.2.0 | Sprint 8 complete | Multi-module, extreme, Plugin Portal |
+| **MVP** | v0.1.0 | Sprint 2 complete | Plugin runs PIT, type-safe DSL, config cache |
+| **Kotlin-aware** | v0.2.0 | Sprint 3 complete | Kotlin junk filter |
+| **Git-aware** | v0.3.0 | Sprint 4 complete | Git-diff scoped analysis |
+| **Reports** | v0.4.0 | Sprint 5 complete | mutation-testing-elements JSON + SARIF |
+| **CI-ready** | v0.5.0 | Sprint 6 complete | GitHub Checks, quality gates |
+| **Advanced** | v0.6.0 | Sprint 7 complete | Extreme mutation, smart incremental |
+| **1.0 GA** | v1.0.0 | Sprint 8 complete | Multi-module, Plugin Portal, stable API |
 
 ## Risk Register
 

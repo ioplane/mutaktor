@@ -20,6 +20,13 @@
 
 **Verdict:** Realistic for 8-10 weeks of focused work. Sprint 3 (Kotlin filters) is the highest-risk sprint — requires bytecode-level understanding of Kotlin compiler output.
 
+### Versioning
+
+Follows [Semantic Versioning 2.0.0](https://semver.org/):
+- `0.x.y` — pre-1.0, API may change between minor versions
+- `1.0.0` — stable public API, Plugin Portal published
+- CHANGELOG follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
+
 ### Dependencies
 
 | Dependency | Status | Risk |
