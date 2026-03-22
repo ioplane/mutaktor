@@ -10,7 +10,7 @@ pluginManagement {
 
 plugins {
     // Auto-download JDKs when not available locally (Qodana, CI, first-time setup)
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 include("mutaktor-gradle-plugin")
