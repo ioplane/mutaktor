@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-03-23
+
+Maintenance release: dependency updates, code quality improvements, JDK compatibility testing.
+
+### Fixed
+- **foojay-resolver-convention 0.9.0 → 1.0.0** — fixes `NoSuchFieldError: JvmVendorSpec.IBM_SEMERU` when building with Gradle 9.4.1 on JDK 17/21. Enables `includeBuild` in consumer projects without errors.
+
+### Changed
+- Replace mutable collections with `buildList`/`buildMap` in `MutationRatchet` and `RatchetBaseline` (SonarCloud code smells)
+- Fix 9 SonarCloud code smells: cognitive complexity, nested ifs, immutable collections, release.yml globs
+- Pin `github/codeql-action` to full commit SHA (v4.34.1) in CI, scorecard, and security workflows
+- Fix `junit-platform-launcher` version to use catalog ref instead of hardcoded value
+
+### Added
+- JDK compatibility test matrix: **36/36 PASS** across 12 vendors (Temurin, Zulu, Zulu CRaC, Corretto, GraalVM, GraalVM CE, Liberica, Liberica NIK, Mandrel, Oracle, Kona, BiSheng, Dragonwell, Semeru), 3 JVM architectures (HotSpot, Graal JIT, OpenJ9), 3 LTS versions (17, 21, 25)
+- Python 3.14 + podman-py automated test harness (`e2e-test/`)
+- Product roadmap presentation (React 19 + Recharts, EN/RU)
+
 ## [0.1.0] - 2026-03-22
 
 First public release under `io.github.ioplane.mutaktor`.
@@ -45,5 +63,6 @@ CE feature-complete release. 135 tests, 4 modules, zero external dependencies.
 - All GitHub Actions pinned to full commit SHAs
 - All workflow permissions at job level (least privilege)
 
-[Unreleased]: https://github.com/ioplane/mutaktor/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ioplane/mutaktor/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ioplane/mutaktor/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ioplane/mutaktor/releases/tag/v0.1.0
