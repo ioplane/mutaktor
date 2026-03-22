@@ -1,0 +1,124 @@
+[project]
+name = "mutaktor-compat-matrix"
+version = "0.1.0"
+description = "Mutaktor CE compatibility test matrix across JDK vendors and frameworks"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "podman>=5.7.0",
+    "rich>=14.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.0",
+    "mypy>=1.16.0",
+    "bandit>=1.9.0",
+    "vulture>=2.14",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.2.0",
+]
+
+[project.scripts]
+matrix = "mutaktor_compat.cli:main"
+
+# ── Ruff (replaces flake8, isort, pyupgrade, pydocstyle) ──────
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+src = ["mutaktor_compat"]
+
+[tool.ruff.lint]
+select = [
+    "F",      # pyflakes
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "S",      # bandit (security)
+    "B",      # bugbear
+    "A",      # builtins shadowing
+    "C4",     # flake8-comprehensions
+    "DTZ",    # datetime timezone
+    "T10",    # debugger
+    "EM",     # error messages
+    "FA",     # future annotations
+    "ISC",    # implicit string concat
+    "ICN",    # import conventions
+    "PIE",    # misc lints
+    "PT",     # pytest style
+    "RSE",    # raise/return
+    "RET",    # return statements
+    "SLF",    # private member access
+    "SIM",    # simplify
+    "TID",    # tidy imports
+    "TCH",    # type checking
+    "ARG",    # unused arguments
+    "PTH",    # pathlib
+    "PL",     # pylint
+    "TRY",    # tryceratops (exception handling)
+    "FLY",    # flynt (f-strings)
+    "PERF",   # performance
+    "FURB",   # refurbishing
+    "RUF",    # ruff-specific
+]
+ignore = [
+    "S603",   # subprocess untrusted input (we run in containers)
+    "S607",   # partial path (same)
+    "TRY003", # long exception messages OK
+    "EM101",  # string literal in exception OK
+    "EM102",  # f-string in exception OK
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "ARG", "PLR2004"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mutaktor_compat"]
+
+# ── Mypy (strict) ─────────────────────────────────────────────
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unreachable = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "podman.*"
+ignore_missing_imports = true
+
+# ── Bandit (security) ─────────────────────────────────────────
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B603", "B607"]
+
+# ── Vulture (dead code) ───────────────────────────────────────
+
+[tool.vulture]
+min_confidence = 80
+paths = ["mutaktor_compat"]
+
+# ── Pytest ────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --tb=short -q"
+
+# ── Coverage ──────────────────────────────────────────────────
+
+[tool.coverage.run]
+source = ["mutaktor_compat"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 50
+show_missing = true

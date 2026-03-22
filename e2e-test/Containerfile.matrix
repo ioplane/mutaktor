@@ -1,0 +1,89 @@
+FROM docker.io/library/oraclelinux:10
+
+RUN dnf install -y git unzip zip curl bash findutils diffutils procps-ng && dnf clean all
+
+RUN curl -s "https://get.sdkman.io" | bash
+
+SHELL ["/bin/bash", "-c"]
+
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 9.4.1
+
+# ── Eclipse Temurin (baseline, HotSpot) ────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-tem && \
+    sdk install java 21.0.10-tem && \
+    sdk install java 25.0.2-tem
+
+# ── Azul Zulu + CRaC ──────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-zulu && \
+    sdk install java 21.0.10-zulu && \
+    sdk install java 25.0.2-zulu && \
+    sdk install java 25.0.2.crac-zulu
+
+# ── Amazon Corretto ────────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-amzn && \
+    sdk install java 21.0.10-amzn && \
+    sdk install java 25.0.2-amzn
+
+# ── Oracle GraalVM (proprietary, Graal JIT) ───────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.12-graal && \
+    sdk install java 21.0.10-graal && \
+    sdk install java 25.0.2-graal
+
+# ── Oracle GraalVM CE (community) ─────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.9-graalce && \
+    sdk install java 21.0.2-graalce && \
+    sdk install java 25.0.2-graalce
+
+# ── BellSoft Liberica ──────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-librca && \
+    sdk install java 21.0.10-librca && \
+    sdk install java 25.0.2-librca
+
+# ── BellSoft Liberica NIK (Native Image Kit) ──────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 23.1.10.r21-nik && \
+    sdk install java 25.0.2.r25-nik
+
+# ── Red Hat Mandrel (GraalVM for Quarkus) ─────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 22.3.5.r17-mandrel && \
+    sdk install java 23.1.10.r21-mandrel && \
+    sdk install java 25.0.2.r25-mandrel
+
+# ── Oracle JDK (reference implementation) ─────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.12-oracle && \
+    sdk install java 21.0.10-oracle && \
+    sdk install java 25.0.2-oracle
+
+# ── IBM Semeru (OpenJ9 VM — different JVM!) ────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-sem && \
+    sdk install java 21.0.10-sem && \
+    sdk install java 25.0.2-sem
+
+# ── Tencent Kona ──────────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-kona && \
+    sdk install java 21.0.10-kona
+
+# ── Huawei BiSheng ────────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-bisheng && \
+    sdk install java 21.0.10-bisheng
+
+# ── Alibaba Dragonwell ────────────────────────────────────────
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && \
+    sdk install java 17.0.18-albba && \
+    sdk install java 21.0.10-albba
+
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk default java 25.0.2-tem
+
+WORKDIR /project
+CMD ["/bin/bash"]

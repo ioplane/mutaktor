@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+results/
+baselines/
+artifacts/
+.firecrawl/
+.ruff_cache/
+.mypy_cache/
+uv.lock
+COMPATIBILITY_SPRINTS.md
+COMPATIBILITY_TEST_PLAN.md
+COMPATIBILITY_REPORT_RU.md
+E2E_TEST_PLAN.md
+projects/*/gradle/
+projects/*/gradlew
+projects/*/gradlew.bat
