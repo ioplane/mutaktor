@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.0"  # 2.3.20 not supported by CodeQL yet
+kotlin = "2.3.20"  # 2.3.20 not supported by CodeQL yet
 pitest = "1.23.0"
 pitest-junit5 = "1.2.3"
 junit = "6.0.3"
