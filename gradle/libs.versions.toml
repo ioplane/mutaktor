@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.0"  # 2.3.20 not supported by CodeQL yet
-pitest = "1.23.0"
+pitest = "1.23.1"
 pitest-junit5 = "1.2.3"
 junit = "6.0.3"
 kotest = "6.1.7"
